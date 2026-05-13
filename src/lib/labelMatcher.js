@@ -83,7 +83,9 @@ var AG_LABEL_ALIASES = [
   [["have_disability", "disability", "disability status", "disability-status", "disabled", "disability_status", "disabilitystatus", "do you have a disability", "have a disability", "disability_heading"], "have_disability"],
   [["gender", "gender identity", "what is your gender", "your gender", "eeoc_gender"], "gender"],
   [["hispanic_ethnicity", "hispanic", "latino", "hispanic or latino", "are you hispanic or latino", "hispanic_latino"], "hispanic_ethnicity"],
-  [["race", "ethnicity", "race / ethnicity", "race/ethnicity", "race or ethnicity", "ethnic background", "race_ethnicity", "eeoc_race"], "race"]
+  [["race", "ethnicity", "race / ethnicity", "race/ethnicity", "race or ethnicity", "ethnic background", "race_ethnicity", "eeoc_race"], "race"],
+  [["lgbtq_identity", "lgbtq", "lgbt", "lgbtq+", "lgbtqia", "member of the lgbtq", "sexual orientation"], "lgbtq_identity"],
+  [["transgender_status", "transgender", "trans status", "do you identify as transgender"], "transgender_status"]
 ];
 
 var AG_DEMOGRAPHIC_TOKENS = [
@@ -93,7 +95,9 @@ var AG_DEMOGRAPHIC_TOKENS = [
   [["military spouse", "are you a military spouse", "military_spouse"], "military_spouse"],
   [["national guard", "national guard or reserves", "national guard reserves", "national_guard"], "national_guard"],
   [["veteran", "veteran status", "protected veteran", "veteran_status", "veteranstatus", "are you a veteran", "vevraa", "served in the military"], "is_veteran"],
-  [["disability", "disability status", "disability-status", "disabled", "disability_status", "disabilitystatus", "do you have a disability", "have a disability", "disability_heading"], "have_disability"]
+  [["disability", "disability status", "disability-status", "disabled", "disability_status", "disabilitystatus", "do you have a disability", "have a disability", "disability_heading"], "have_disability"],
+  [["lgbtq", "lgbt", "lgbtq+", "lgbtqia", "member of the lgbtq", "sexual orientation"], "lgbtq_identity"],
+  [["transgender", "trans status", "do you identify as transgender"], "transgender_status"]
 ];
 
 function _agEscapeRegex(s) {

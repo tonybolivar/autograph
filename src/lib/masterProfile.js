@@ -101,7 +101,9 @@ var AG_PROFILE_FIELDS = [
   { id: "have_disability", label: "Disability status", type: "select", section: "demographic", options: ["", "Yes", "No", "Prefer Not To Answer"] },
   { id: "gender", label: "Gender", type: "select", section: "demographic", options: ["", "Male", "Female", "Non-binary", "Prefer Not To Answer"] },
   { id: "hispanic_ethnicity", label: "Hispanic or Latino?", type: "select", section: "demographic", options: ["", "Yes", "No", "Prefer Not To Answer"] },
-  { id: "race", label: "Race / Ethnicity", type: "select", section: "demographic", options: ["", "White", "Black or African American", "Hispanic or Latino", "Asian", "Native Hawaiian or Other Pacific Islander", "American Indian or Alaska Native", "Two or More Races", "Prefer Not To Answer"] }
+  { id: "race", label: "Race / Ethnicity", type: "select", section: "demographic", options: ["", "White", "Black or African American", "Hispanic or Latino", "Asian", "Native Hawaiian or Other Pacific Islander", "American Indian or Alaska Native", "Two or More Races", "Prefer Not To Answer"] },
+  { id: "lgbtq_identity", label: "LGBTQ+ Self-Identification", type: "select", section: "demographic", options: ["", "Yes", "No", "Prefer Not To Answer"] },
+  { id: "transgender_status", label: "Transgender Self-Identification", type: "select", section: "demographic", options: ["", "Yes", "No", "Prefer Not To Answer"] }
 ];
 
 var AG_PROFILE_IDS = new Set(AG_PROFILE_FIELDS.map(f => f.id));
