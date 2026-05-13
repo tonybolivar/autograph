@@ -62,7 +62,8 @@
     "*://careers.southwestair.com/*",
     "*://careers.dpdhl.com/*",
     "*://careers.gm.com/*",
-    "*://careers.thermofisher.com/*"
+    "*://careers.thermofisher.com/*",
+    "*://careers.adobe.com/*"
   ],
   "optional_host_permissions": ["<all_urls>"],
   "content_scripts": [
@@ -97,7 +98,8 @@
         "*://careers.southwestair.com/*",
         "*://careers.dpdhl.com/*",
         "*://careers.gm.com/*",
-        "*://careers.thermofisher.com/*"
+        "*://careers.thermofisher.com/*",
+        "*://careers.adobe.com/*"
       ],
       "css": ["src/styles/content.css"],
       "js": [

@@ -4,7 +4,8 @@ var AG_KNOWN_CUSTOM_DOMAINS = {
   "careers.southwestair.com": "phenom",
   "careers.dpdhl.com": "phenom",
   "careers.gm.com": "phenom",
-  "careers.thermofisher.com": "phenom"
+  "careers.thermofisher.com": "phenom",
+  "careers.adobe.com": "phenom"
 };
 
 async function agLoadCustomDomains() {
