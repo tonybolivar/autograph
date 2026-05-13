@@ -353,12 +353,14 @@
     if (typeof agSynthesizeResumeFile !== "function") return 0;
     const fileInputs = Array.from(document.querySelectorAll('input[type="file"]'));
     if (fileInputs.length === 0) return 0;
-    const candidates = fileInputs.filter(el =>
-      !resumeFilledInputs.has(el) &&
-      el.files.length === 0 &&
-      agIsResumeFileInput(el) &&
-      (!adapter.shouldFillResumeInput || adapter.shouldFillResumeInput(el))
-    );
+    const candidates = fileInputs.filter(el => {
+      if (resumeFilledInputs.has(el)) return false;
+      if (el.files.length > 0) return false;
+      const adapterDecision = adapter.shouldFillResumeInput ? adapter.shouldFillResumeInput(el) : undefined;
+      if (adapterDecision === true) return true;
+      if (adapterDecision === false) return false;
+      return agIsResumeFileInput(el);
+    });
     if (candidates.length === 0) return 0;
     if (cachedResumeFile === undefined) {
       cachedResumeFile = await agSynthesizeResumeFile();
@@ -523,6 +525,38 @@
     }, 400);
   }
 
+  const _expandedRepeaterKeys = new Set();
+  async function expandGenericRepeaters(profile, workHistory) {
+    const key = location.pathname + location.search;
+    if (_expandedRepeaterKeys.has(key)) return;
+
+    const workRe = /^add\s+(?:another\s+)?(?:position|experience|job|work\s*experience|role|employment)\b/i;
+    const eduRe = /^add\s+(?:another\s+)?(?:education|school|degree|university|qualification)\b/i;
+
+    const workTarget = workHistory && workHistory.length > 0 ? Math.min(workHistory.length, 5) : 0;
+    const eduTarget = (profile && (profile.education_school || profile.education_degree)) ? 1 : 0;
+
+    if (workTarget > 0) await _clickRepeaterButton(workRe, workTarget);
+    if (eduTarget > 0) await _clickRepeaterButton(eduRe, eduTarget);
+
+    _expandedRepeaterKeys.add(key);
+  }
+
+  async function _clickRepeaterButton(textRe, target) {
+    for (let i = 0; i < target; i++) {
+      const btns = Array.from(document.querySelectorAll('button, a, [role="button"]'));
+      const btn = btns.find(b => {
+        if (!b.offsetParent) return false;
+        if (b.disabled) return false;
+        const t = (b.textContent || "").trim();
+        return textRe.test(t);
+      });
+      if (!btn) return;
+      try { btn.click(); } catch (e) { return; }
+      await new Promise(r => setTimeout(r, 500));
+    }
+  }
+
   function setupObserver() {
     if (observer) return;
     observer = new MutationObserver(muts => {
@@ -610,10 +644,13 @@
     if (adapter.gateFillOnVisibility && adapter.fieldSelector) {
       await waitForVisibility(adapter.fieldSelector);
     }
+    const _prefillProfile = await agLoadProfile();
+    const _prefillWork = (typeof agLoadWorkHistory === "function") ? await agLoadWorkHistory() : [];
+    await expandGenericRepeaters(_prefillProfile, _prefillWork);
     if (adapter.prefillPass) {
       try {
-        const profile = await agLoadProfile();
-        const workHistory = (typeof agLoadWorkHistory === "function") ? await agLoadWorkHistory() : [];
+        const profile = _prefillProfile;
+        const workHistory = _prefillWork;
         await adapter.prefillPass({ profile, workHistory });
       } catch (err) {}
     }
