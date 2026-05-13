@@ -7,24 +7,46 @@ var AG_ADAPTER_RECRUITEE = {
   },
 
   getFieldId(el) {
-    if (el.id && !/^[a-f0-9-]{20,}$/.test(el.id)) return el.id;
-    if (el.name) return el.name;
+    if (el.name) {
+      const m = el.name.match(/^candidate\.openQuestionAnswers\.(\d+)\.(.+)$/);
+      if (m) return `oqa_${m[1]}_${m[2]}`;
+      const direct = el.name.match(/^candidate\.(.+)$/);
+      if (direct) return direct[1].toLowerCase();
+      return el.name;
+    }
+    if (el.id) {
+      const m = el.id.match(/^input-candidate\.([^.\-]+)/);
+      if (m) return m[1].toLowerCase();
+      if (!/^[a-f0-9-]{20,}$/.test(el.id)) return el.id;
+    }
     return null;
   },
 
   getFieldLabel(el) {
-    const wrap = el.closest(".c-form-field, .form-group, [class*='FormField']");
+    const wrap = el.closest(".c-form-field, .form-group, [class*='FormField'], [class*='c-form']");
     if (wrap) {
-      const lbl = wrap.querySelector("label, .c-form-field__label");
+      const directLbl = wrap.querySelector(":scope > label, :scope > legend, :scope > [class*='abel']");
+      if (directLbl && directLbl.textContent.trim()) return directLbl.textContent.replace(/\*$/, "").trim();
+      const lbl = wrap.querySelector("label, legend, [class*='abel']");
       if (lbl && lbl.textContent.trim()) return lbl.textContent.replace(/\*$/, "").trim();
     }
     return null;
   },
 
-  synthesizeValue(profile, fieldId) {
+  synthesizeValue(profile, fieldId, label) {
     const fid = (fieldId || "").toLowerCase();
+    const lab = (label || "").toLowerCase();
     if (fid === "name" || fid === "full_name") {
       return `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || undefined;
+    }
+    if (/what\s+city\s+are\s+you\s+currently\s+based/i.test(lab) || /current\s+city/i.test(lab)) {
+      return profile.city || undefined;
+    }
+    if (/state\s+(do\s+you\s+live|are\s+you\s+located|of\s+residence)/i.test(lab) || /which\s+state/i.test(lab)) {
+      return profile.state_province || undefined;
+    }
+    if (/desired.*salary|salary.*expectation/i.test(lab)) {
+      return profile.desired_salary || undefined;
     }
     return undefined;
   }
