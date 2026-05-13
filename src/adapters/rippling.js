@@ -37,6 +37,48 @@ var AG_ADAPTER_RIPPLING = {
     return undefined;
   },
 
+  async prefillPass() {
+    await this._maybeAttachResume();
+  },
+
+  async _maybeAttachResume() {
+    if (typeof agSynthesizeResumeFile !== "function") return;
+    var key = location.pathname + location.search;
+    if (window.__autograph_rip_resume_attached === key) return;
+    var fileInput = Array.from(document.querySelectorAll('input[type="file"]'))
+      .find(el => (typeof agIsResumeFileInput === "function" ? agIsResumeFileInput(el) : false));
+    if (!fileInput) return;
+    if (fileInput.files && fileInput.files.length > 0) {
+      window.__autograph_rip_resume_attached = key;
+      return;
+    }
+    var file = await agSynthesizeResumeFile();
+    if (!file) return;
+    if (typeof agFillFileInput !== "function") return;
+    if (!agFillFileInput(fileInput, file)) return;
+    window.__autograph_rip_resume_attached = key;
+    await this._waitForParseSettle();
+  },
+
+  async _waitForParseSettle() {
+    var start = Date.now();
+    var lastSig = null;
+    var stableHits = 0;
+    while (Date.now() - start < 6000) {
+      await new Promise(r => setTimeout(r, 400));
+      var sig = "";
+      var inputs = document.querySelectorAll('input[name="first_name"], input[name="last_name"], input[name="email"], input[id*="first"], input[id*="email"]');
+      for (var inp of inputs) sig += (inp.value || "") + "|";
+      if (sig === lastSig) {
+        stableHits++;
+        if (stableHits >= 2) return;
+      } else {
+        stableHits = 0;
+        lastSig = sig;
+      }
+    }
+  },
+
   async fillDropdown(el, fieldId, candidates) {
     if (!candidates || candidates.length === 0) return false;
     el.click();
