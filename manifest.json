@@ -57,7 +57,12 @@
     "*://boards.greenhouse.io/*",
     "*://*.bamboohr.com/*",
     "*://jobs.gem.com/*",
-    "*://careers.formlabs.com/*"
+    "*://careers.formlabs.com/*",
+    "*://careers.mastercard.com/*",
+    "*://careers.southwestair.com/*",
+    "*://careers.dpdhl.com/*",
+    "*://careers.gm.com/*",
+    "*://careers.thermofisher.com/*"
   ],
   "optional_host_permissions": ["<all_urls>"],
   "content_scripts": [
@@ -87,7 +92,12 @@
         "*://recruiting.ultipro.com/*",
         "*://*.bamboohr.com/*",
         "*://jobs.gem.com/*",
-        "*://careers.formlabs.com/*"
+        "*://careers.formlabs.com/*",
+        "*://careers.mastercard.com/*",
+        "*://careers.southwestair.com/*",
+        "*://careers.dpdhl.com/*",
+        "*://careers.gm.com/*",
+        "*://careers.thermofisher.com/*"
       ],
       "css": ["src/styles/content.css"],
       "js": [

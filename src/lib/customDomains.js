@@ -1,5 +1,10 @@
 var AG_KNOWN_CUSTOM_DOMAINS = {
-  "careers.formlabs.com": "greenhouse"
+  "careers.formlabs.com": "greenhouse",
+  "careers.mastercard.com": "phenom",
+  "careers.southwestair.com": "phenom",
+  "careers.dpdhl.com": "phenom",
+  "careers.gm.com": "phenom",
+  "careers.thermofisher.com": "phenom"
 };
 
 async function agLoadCustomDomains() {
