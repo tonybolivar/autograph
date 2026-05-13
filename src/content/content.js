@@ -144,18 +144,33 @@
       return false;
     }
     if (isCheckRadio(el)) {
+      const optionLabel = adapter.getRadioValue
+        ? adapter.getRadioValue(el, agExtractLabel(el))
+        : (agExtractLabel(el) || el.value || "");
+      const candidates = Array.isArray(value) ? value : [value];
+      const sameNameCount = el.name
+        ? document.querySelectorAll(`input[type="${el.type}"][name="${CSS.escape(el.name)}"]`).length
+        : 1;
+      const isYesNoSingleCheckbox = el.type === "checkbox" && sameNameCount <= 1 &&
+        candidates.length === 1 && (candidates[0] === "Yes" || candidates[0] === "No" || candidates[0] === true || candidates[0] === false);
+
       let target;
-      if (el.type === "radio") {
-        if (adapter.getRadioValue) {
-          target = adapter.getRadioValue(el, agExtractLabel(el)) === value;
-        } else {
-          target = el.value === value;
-        }
+      if (isYesNoSingleCheckbox) {
+        target = candidates[0] === "Yes" || candidates[0] === true || candidates[0] === "true";
       } else {
-        if (value === "Yes" || value === true || value === "true") target = true;
-        else if (value === "No" || value === false || value === "false") target = false;
-        else target = Array.isArray(value) ? value.includes(el.value) : (value === el.value);
+        const optL = String(optionLabel).toLowerCase().trim();
+        target = candidates.some(cand => {
+          if (cand === true || cand === "true") return optL === "yes" || optL.startsWith("yes");
+          if (cand === false || cand === "false") return optL === "no" || optL.startsWith("no");
+          const c = String(cand).toLowerCase().trim();
+          if (!c) return false;
+          if (optL === c) return true;
+          if (optL.startsWith(c)) return true;
+          if (c.length >= 4 && c.startsWith(optL.slice(0, Math.max(4, optL.length)))) return true;
+          return false;
+        });
       }
+
       const adapterHasCheckbox = adapter.isCheckbox && adapter.isCheckbox(el);
       const currentChecked = adapter.getCheckboxChecked ? adapter.getCheckboxChecked(el) : el.checked;
       if (currentChecked === target) return false;
@@ -251,8 +266,9 @@
             if (agIsSelectField(el) || isDropdown(el)) {
               const denorm = AG_VALUE_DENORMALIZERS[profileFieldId];
               value = denorm ? denorm(raw) : [raw];
-            } else if (el.type === "radio") {
-              value = raw;
+            } else if (el.type === "radio" || el.type === "checkbox") {
+              const denorm = AG_VALUE_DENORMALIZERS[profileFieldId];
+              value = denorm ? denorm(raw) : [raw];
             } else {
               value = raw;
             }
@@ -269,6 +285,8 @@
             const dec = agFindDeclineOption(Array.from(el.options));
             if (dec) value = dec.textContent.trim();
           } else if (isDropdown(el)) {
+            value = AG_DECLINE_OPTION_LABELS.slice();
+          } else if (el.type === "radio" || el.type === "checkbox") {
             value = AG_DECLINE_OPTION_LABELS.slice();
           }
         }
