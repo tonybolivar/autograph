@@ -13,6 +13,8 @@ var AG_ADAPTER_LEVER = {
     if (el.name === "phone") return "phone_number";
     if (el.name === "org") return "current_company";
     if (el.name === "location") return "location";
+    if (el.name === "pronouns") return "personal_pronouns";
+    if (el.id === "customPronounsTextField") return "personal_pronouns";
     const urlMatch = el.name.match(/^urls\[(.+)\]$/);
     if (urlMatch) {
       const site = urlMatch[1].toLowerCase().replace(/[^a-z0-9]+/g, "_");
@@ -33,6 +35,7 @@ var AG_ADAPTER_LEVER = {
     if (el.name === "phone") return "Phone";
     if (el.name === "org") return "Current Company";
     if (el.name === "location") return "Location";
+    if (el.name === "pronouns" || el.id === "customPronounsTextField") return "Pronouns";
     const urlMatch = el.name && el.name.match(/^urls\[(.+)\]$/);
     if (urlMatch) return `${urlMatch[1]} URL`;
     const question = el.closest(".application-question");
