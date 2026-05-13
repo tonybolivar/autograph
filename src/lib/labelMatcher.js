@@ -10,6 +10,7 @@ var AG_LABEL_ALIASES = [
   [["phone_type", "phone type", "phonetype", "device_type", "device type", "phone--phonetype"], "phone_type"],
   [["phone_number", "phone number", "phonenumber", "phone", "telephone", "tel", "mobile", "cell", "phone--number", "primary phone", "primary telephone", "cell phone", "cell number", "mobile phone", "mobile number", "contact phone", "telephone number"], "phone_number"],
   [["phone_country", "phone country", "phonecountry", "dial code", "country code", "country_code", "phone--country", "phone dial code", "country phone code", "countryphonecode"], "phone_country"],
+  [["phone_extension", "phone extension", "phoneextension", "phone ext", "extension", "ext."], "phone_extension"],
   [["linkedin", "linkedin_profile", "linkedin profile", "linkedin url", "linkedin profile url", "linkedin_url", "linkedinurl", "linkedinaccount", "linkedin_link", "linkedin link", "sitelink-1"], "linkedin_profile"],
   [["website", "personal website", "portfolio", "portfolio url", "portfolio website", "personal_website", "your website", "website url", "personal site", "portfolio link", "website_url", "personalwebsite"], "website"],
   [["github", "github_profile", "github profile", "github url", "github_url", "githubprofile", "githuburl", "github username", "github_link", "github link"], "github_profile"],
