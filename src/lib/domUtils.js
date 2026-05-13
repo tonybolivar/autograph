@@ -79,6 +79,13 @@ function agExtractLabel(el) {
     cursor = cursor.previousElementSibling;
     hops++;
   }
+  const looksLikeValidationMessage = (text) => {
+    if (!text) return true;
+    const t = text.toLowerCase();
+    if (/\b(is required|must be|please (enter|select|provide)|invalid|error|cannot be|may not|does not match)\b/.test(t)) return true;
+    if (/^required\.?$/i.test(text.trim())) return true;
+    return false;
+  };
   let ancestor = el.parentElement;
   let aHops = 0;
   while (ancestor && aHops < 5) {
@@ -87,7 +94,7 @@ function agExtractLabel(el) {
     while (sib && sHops < 3) {
       const text = (sib.textContent || "").trim();
       const hasFormInside = sib.querySelector && sib.querySelector("input, select, textarea");
-      if (text && text.length < 120 && !hasFormInside) {
+      if (text && text.length < 120 && !hasFormInside && !looksLikeValidationMessage(text)) {
         return agCleanLabel(text);
       }
       sib = sib.previousElementSibling;
@@ -98,7 +105,7 @@ function agExtractLabel(el) {
       if (first && first !== el && !first.contains(el)) {
         const fText = (first.textContent || "").trim();
         const fHasForm = first.querySelector && first.querySelector("input, select, textarea");
-        if (fText && fText.length < 120 && !fHasForm) {
+        if (fText && fText.length < 120 && !fHasForm && !looksLikeValidationMessage(fText)) {
           return agCleanLabel(fText);
         }
       }

@@ -36,16 +36,34 @@ async function main() {
 
   const opt = await ctx.newPage();
   await opt.goto(`chrome-extension://${extId}/src/ui/options/options.html`);
-  await opt.evaluate(async ({ p, r }) => {
+  const WORK = [
+    { id: 'w1', company: 'Acme Corp', title: 'Senior Engineer', location: 'Hamilton, NY', start_month: 'January', start_year: '2022', end_month: '', end_year: '', is_current: true, description: 'Led the foo team.' },
+    { id: 'w2', company: 'Beta Inc', title: 'Engineer', location: 'Remote', start_month: 'June', start_year: '2020', end_month: 'December', end_year: '2021', is_current: false, description: 'Built widgets.' }
+  ];
+  await opt.evaluate(async ({ p, r, w }) => {
     await chrome.storage.sync.set({ masterProfile: p });
-    await chrome.storage.local.set({ resumeFile: { base64: r, filename: 'anthony_bolivar_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() } });
-  }, { p: PROFILE, r: PDF });
+    await chrome.storage.local.set({
+      resumeFile: { base64: r, filename: 'anthony_bolivar_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() },
+      workHistory: w
+    });
+  }, { p: PROFILE, r: PDF, w: WORK });
   await opt.close();
 
   const page = await ctx.newPage();
   page.on('pageerror', e => console.log('[pageerror]', e.message.slice(0, 200)));
   await page.goto(URL_, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(5000);
+
+  const workDiag = await page.evaluate(() => {
+    const rows = document.querySelectorAll('li.experience');
+    return Array.from(rows).map(row => ({
+      company: row.querySelector('input[placeholder="Company"]:not([type="date"])')?.value,
+      title: row.querySelector('input[placeholder="Title"]')?.value,
+      summary: row.querySelector('textarea[placeholder="Summary"]')?.value?.slice(0, 30),
+      dates: Array.from(row.querySelectorAll('input[type="date"]')).map(d => d.value)
+    }));
+  });
+  console.log('WORK ROWS:', JSON.stringify(workDiag));
 
   const r = await page.evaluate(() => {
     const fields = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea, [role="combobox"]'));
