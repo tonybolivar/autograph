@@ -174,6 +174,12 @@
       const adapterHasCheckbox = adapter.isCheckbox && adapter.isCheckbox(el);
       const currentChecked = adapter.getCheckboxChecked ? adapter.getCheckboxChecked(el) : el.checked;
       if (currentChecked === target) return false;
+      if (target && el.type === "radio" && el.name) {
+        const peers = document.querySelectorAll(`input[type="radio"][name="${CSS.escape(el.name)}"]`);
+        for (const peer of peers) {
+          if (peer !== el && peer.checked) return false;
+        }
+      }
       if (adapterHasCheckbox && adapter.fillCheckbox) {
         adapter.fillCheckbox(el, target);
       } else {
