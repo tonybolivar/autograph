@@ -315,6 +315,26 @@ function agNativeSetValue(el, value) {
   el.setAttribute("value", value);
 }
 
+function agReformatDateForInput(value, el) {
+  if (!value || typeof value !== "string") return value;
+  var iso = value.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (!iso) return value;
+  var yyyy = iso[1];
+  var mm = iso[2].length === 1 ? "0" + iso[2] : iso[2];
+  var dd = iso[3].length === 1 ? "0" + iso[3] : iso[3];
+  var type = (el.type || "").toLowerCase();
+  if (type === "date") return yyyy + "-" + mm + "-" + dd;
+  var ph = ((el.placeholder || "") + " " + (el.getAttribute("aria-placeholder") || "")).toLowerCase();
+  if (/mm\/dd\/yyyy/.test(ph)) return mm + "/" + dd + "/" + yyyy;
+  if (/dd\/mm\/yyyy/.test(ph)) return dd + "/" + mm + "/" + yyyy;
+  if (/yyyy-mm-dd/.test(ph)) return yyyy + "-" + mm + "-" + dd;
+  if (/yyyy\/mm\/dd/.test(ph)) return yyyy + "/" + mm + "/" + dd;
+  if (/mm-dd-yyyy/.test(ph)) return mm + "-" + dd + "-" + yyyy;
+  if (/dd-mm-yyyy/.test(ph)) return dd + "-" + mm + "-" + yyyy;
+  if (/mm\.dd\.yyyy/.test(ph)) return mm + "." + dd + "." + yyyy;
+  return value;
+}
+
 function agFillTextField(el, value) {
   if (window.getComputedStyle(el).display === "none") return false;
   const current = el.value;
@@ -324,6 +344,7 @@ function agFillTextField(el, value) {
     || (placeholder && current === placeholder)
     || (el.type === "range" && current === (el.getAttribute("min") || "0"));
   if (!isEmpty) return false;
+  value = agReformatDateForInput(value, el);
   el.focus();
   el.dispatchEvent(new Event("focusin", { bubbles: true }));
   agNativeSetValue(el, value);
