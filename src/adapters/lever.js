@@ -7,6 +7,7 @@ var AG_ADAPTER_LEVER = {
   },
 
   getFieldId(el) {
+    if (el.tagName === "SELECT" && el.classList && el.classList.contains("candidate-location")) return "country";
     if (!el.name) return null;
     if (el.name === "name") return "full_name";
     if (el.name === "email") return "email";
@@ -36,6 +37,7 @@ var AG_ADAPTER_LEVER = {
     if (el.name === "org") return "Current Company";
     if (el.name === "location") return "Location";
     if (el.name === "pronouns" || el.id === "customPronounsTextField") return "Pronouns";
+    if (el.tagName === "SELECT" && el.classList && el.classList.contains("candidate-location")) return "Country";
     const urlMatch = el.name && el.name.match(/^urls\[(.+)\]$/);
     if (urlMatch) return `${urlMatch[1]} URL`;
     const question = el.closest(".application-question");
