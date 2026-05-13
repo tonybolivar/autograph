@@ -97,8 +97,40 @@ var AG_ADAPTER_WORKDAY = {
   async fillDropdown(el, fieldId, candidates) {
     if (!candidates || candidates.length === 0) return false;
     el.scrollIntoView({ block: "center", behavior: "instant" });
+    const isMulti = el.getAttribute && el.getAttribute("data-automation-id") === "multiSelectContainer";
     el.click();
     await new Promise(r => setTimeout(r, 250));
+    if (isMulti) {
+      const searchBox = el.querySelector('input[data-automation-id="searchBox"]') || el.querySelector('input[type="text"]');
+      for (const cand of candidates) {
+        if (!searchBox) break;
+        const query = String(cand).trim();
+        if (!query) continue;
+        searchBox.focus();
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+        setter.call(searchBox, query);
+        searchBox.dispatchEvent(new Event("input", { bubbles: true }));
+        await new Promise(r => setTimeout(r, 500));
+        const opts = Array.from(document.querySelectorAll('[data-automation-id="promptOption"]'));
+        const lower = query.toLowerCase();
+        const exact = opts.find(o => o.textContent.trim().toLowerCase() === lower);
+        const starts = opts.find(o => o.textContent.trim().toLowerCase().startsWith(lower));
+        const contains = opts.find(o => o.textContent.trim().toLowerCase().includes(lower));
+        const pick = exact || starts || contains;
+        if (pick) {
+          pick.click();
+          await new Promise(r => setTimeout(r, 150));
+          return true;
+        }
+      }
+      if (searchBox) {
+        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+        setter.call(searchBox, "");
+        searchBox.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+      document.body.click();
+      return false;
+    }
     let panel = document.querySelector("[data-automation-id='promptOption'], [role='listbox'][data-automation-id]");
     if (!panel) {
       const popup = document.querySelector("[role='dialog'][aria-expanded='true'], [role='listbox']");
