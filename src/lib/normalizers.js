@@ -258,6 +258,33 @@ var AG_VALUE_DENORMALIZERS = {
       ];
     }
     return [raw];
+  },
+  referral_source: (canonical) => {
+    if (!canonical) return [];
+    var raw = String(canonical).trim();
+    var lower = raw.toLowerCase();
+    if (/linkedin/.test(lower)) {
+      return [raw, "LinkedIn", "Social Media", "Social Network", "Online Job Board", "Job Boards", "Online", "Other"];
+    }
+    if (/indeed|ziprecruiter|monster|glassdoor|dice/.test(lower)) {
+      return [raw, "Job Boards", "Online Job Board", "Online", "Other"];
+    }
+    if (/twitter|facebook|instagram|tiktok|youtube/.test(lower)) {
+      return [raw, "Social Media", "Social Network", "Online", "Other"];
+    }
+    if (/google|search|seo/.test(lower)) {
+      return [raw, "Internet Search", "Search Engine", "Online", "Other"];
+    }
+    if (/referr|friend|colleague|employee/.test(lower)) {
+      return [raw, "Employee Referral", "Referral", "Friend", "Other"];
+    }
+    if (/university|college|school|career fair/.test(lower)) {
+      return [raw, "Through my University", "University", "School", "Career Fair", "Other"];
+    }
+    if (/company\s*website|career[s\s]*page|website/.test(lower)) {
+      return [raw, "Company Website", "Careers Page", "Website", "Other"];
+    }
+    return [raw, "Other"];
   }
 };
 
