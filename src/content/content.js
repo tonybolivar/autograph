@@ -182,6 +182,13 @@
       const siteData = await agLoadFieldData(currentSiteId);
       const instanceData = currentInstanceKey ? await agLoadFieldData(currentInstanceKey) : {};
       const labels = await agLoadFieldLabels(currentSiteId);
+      const workHistory = (typeof agLoadWorkHistory === "function") ? await agLoadWorkHistory() : [];
+
+      const currentJob = workHistory.find(j => j.is_current) || workHistory[0];
+      if (currentJob) {
+        if (!profile.current_company && currentJob.company) profile.current_company = currentJob.company;
+        if (!profile.current_title && currentJob.title) profile.current_title = currentJob.title;
+      }
 
       const selector = adapter.fieldSelector || "input, select, textarea";
       const els = Array.from(document.querySelectorAll(selector));
@@ -215,6 +222,17 @@
         if (value === undefined) {
           const recalled = agRecallByLabelSiblings(fieldId, label, labels, dataSource);
           if (recalled !== undefined) value = recalled;
+        }
+
+        if (value === undefined && workHistory.length > 0 && typeof agParseWorkFieldId === "function") {
+          const work = agParseWorkFieldId(label, fieldId);
+          if (work) {
+            const entry = workHistory[work.index];
+            if (entry) {
+              const v = agWorkEntryValueFor(entry, work.subfield);
+              if (v !== undefined) value = v;
+            }
+          }
         }
 
         if (value === undefined && adapter.synthesizeValue) {

@@ -41,8 +41,13 @@
 
     <section id="tab-experience" class="panel">
       <h2>Work Experience</h2>
-      <p class="panel-help">Your current role plus total years of experience. Many ATSes ask just these three. Full work history with multiple jobs is on the roadmap.</p>
+      <p class="panel-help">Your current role and total years of experience cover the basic case. Add individual jobs below for ATSes that ask for a full work history.</p>
       <div class="grid" id="grid-experience"></div>
+
+      <h3 class="subsection">Work History</h3>
+      <p class="panel-help">Most recent first. Autograph will fill numbered work-history fields on supported ATSes in this order.</p>
+      <div id="workHistoryList"></div>
+      <button id="addJobBtn" class="btn">Add job</button>
     </section>
 
     <section id="tab-education" class="panel">
@@ -128,6 +133,7 @@
   <script src="../../lib/masterProfile.js"></script>
   <script src="../../lib/resume.js"></script>
   <script src="../../lib/customDomains.js"></script>
+  <script src="../../lib/workHistory.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

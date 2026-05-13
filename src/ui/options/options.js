@@ -156,6 +156,133 @@ async function renderCaptured() {
   }
 }
 
+function jobInput(field, entry, onChange) {
+  const wrap = document.createElement("div");
+  wrap.className = `job-field job-field-${field.id}`;
+  const label = document.createElement("label");
+  label.textContent = field.label;
+  wrap.appendChild(label);
+
+  let input;
+  if (field.type === "textarea") {
+    input = document.createElement("textarea");
+    input.rows = 3;
+    input.value = entry[field.id] || "";
+  } else if (field.type === "select") {
+    input = document.createElement("select");
+    for (const opt of field.options) {
+      const o = document.createElement("option");
+      o.value = opt;
+      o.textContent = opt || "Month";
+      if (opt === entry[field.id]) o.selected = true;
+      input.appendChild(o);
+    }
+  } else if (field.type === "checkbox") {
+    input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = !!entry[field.id];
+  } else {
+    input = document.createElement("input");
+    input.type = "text";
+    input.value = entry[field.id] || "";
+  }
+
+  const event = field.type === "checkbox" || field.type === "select" ? "change" : "input";
+  let debounce;
+  input.addEventListener(event, () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const value = field.type === "checkbox" ? input.checked : input.value;
+      onChange(field.id, value);
+    }, field.type === "checkbox" || field.type === "select" ? 0 : 400);
+  });
+
+  wrap.appendChild(input);
+  return wrap;
+}
+
+async function renderWorkHistory() {
+  const list = $("#workHistoryList");
+  if (!list) return;
+  list.innerHTML = "";
+  const entries = await agLoadWorkHistory();
+  if (entries.length === 0) {
+    list.innerHTML = `<p class="panel-help">No jobs yet. Click Add job to start your work history.</p>`;
+    return;
+  }
+  entries.forEach((entry, idx) => {
+    const card = document.createElement("div");
+    card.className = "job-card";
+
+    const header = document.createElement("div");
+    header.className = "job-header";
+    const title = document.createElement("div");
+    title.className = "job-title";
+    title.textContent = `${entry.title || "(Untitled role)"} at ${entry.company || "(Company)"}`;
+    header.appendChild(title);
+
+    const actions = document.createElement("div");
+    actions.className = "job-actions";
+    const upBtn = document.createElement("button");
+    upBtn.className = "btn";
+    upBtn.textContent = "Up";
+    upBtn.disabled = idx === 0;
+    upBtn.addEventListener("click", async () => {
+      await agMoveWorkEntry(entry.id, -1);
+      renderWorkHistory();
+    });
+    const downBtn = document.createElement("button");
+    downBtn.className = "btn";
+    downBtn.textContent = "Down";
+    downBtn.disabled = idx === entries.length - 1;
+    downBtn.addEventListener("click", async () => {
+      await agMoveWorkEntry(entry.id, 1);
+      renderWorkHistory();
+    });
+    const delBtn = document.createElement("button");
+    delBtn.className = "btn btn-warn";
+    delBtn.textContent = "Delete";
+    delBtn.addEventListener("click", async () => {
+      if (!confirm(`Remove ${entry.title || "this job"} at ${entry.company || "this company"}?`)) return;
+      await agRemoveWorkEntry(entry.id);
+      renderWorkHistory();
+    });
+    actions.appendChild(upBtn);
+    actions.appendChild(downBtn);
+    actions.appendChild(delBtn);
+    header.appendChild(actions);
+    card.appendChild(header);
+
+    const body = document.createElement("div");
+    body.className = "job-body";
+
+    const onChange = async (fieldId, value) => {
+      await agUpdateWorkEntry(entry.id, { [fieldId]: value });
+      title.textContent = fieldId === "title" || fieldId === "company"
+        ? (() => {
+            const t = fieldId === "title" ? value : entry.title;
+            const c = fieldId === "company" ? value : entry.company;
+            entry[fieldId] = value;
+            return `${t || "(Untitled role)"} at ${c || "(Company)"}`;
+          })()
+        : title.textContent;
+    };
+
+    for (const field of AG_WORK_ENTRY_FIELDS) {
+      body.appendChild(jobInput(field, entry, onChange));
+    }
+    card.appendChild(body);
+    list.appendChild(card);
+  });
+}
+
+document.addEventListener("click", async (e) => {
+  if (e.target?.id === "addJobBtn") {
+    await agAddWorkEntry({ is_current: false });
+    renderWorkHistory();
+  }
+});
+
 async function renderResume() {
   const status = $("#resumeStatus");
   const meta = await agLoadResumeMeta();
@@ -240,6 +367,7 @@ function switchTab(name) {
   if (name === "data") renderCaptured();
   if (name === "resume") renderResume();
   if (name === "domains") renderDomains();
+  if (name === "experience") renderWorkHistory();
 }
 
 $$(".tab").forEach(t => t.addEventListener("click", () => switchTab(t.dataset.tab)));

@@ -7,6 +7,7 @@ const AG_CONTENT_JS = [
   "src/lib/capture.js",
   "src/lib/resume.js",
   "src/lib/customDomains.js",
+  "src/lib/workHistory.js",
   "src/adapters/_default.js",
   "src/adapters/workday.js",
   "src/adapters/smartrecruiters.js",
