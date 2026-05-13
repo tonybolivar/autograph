@@ -60,26 +60,47 @@ var AG_ADAPTER_GREENHOUSE = {
 
   async fillDropdown(el, fieldId, candidates) {
     if (!candidates || candidates.length === 0) return false;
-    const control = el.closest(".select__control, [class*='select__control']") || el;
-    const input = control.querySelector("input[role='combobox']") || el;
-    input.focus();
-    control.click();
-    await new Promise(r => setTimeout(r, 200));
-    let menu = document.querySelector(".select__menu, [class*='select__menu']");
-    if (!menu) {
-      control.click();
-      await new Promise(r => setTimeout(r, 200));
-      menu = document.querySelector(".select__menu, [class*='select__menu']");
+    var control = el.closest(".select__control, [class*='select__control']") || el;
+    var input = control.querySelector("input[role='combobox']") || el;
+    var findMenu = () => {
+      var local = control.parentElement?.querySelector(".select__menu, [class*='select__menu']");
+      if (local) return local;
+      return document.querySelector(".select__menu, [class*='select__menu']");
+    };
+    var openAttempts = [
+      async () => {
+        input.focus();
+        control.click();
+      },
+      async () => {
+        input.focus();
+        control.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
+        control.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
+        control.dispatchEvent(new MouseEvent("click", { bubbles: true, button: 0 }));
+      },
+      async () => {
+        input.focus();
+        input.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+      }
+    ];
+    var menu = null;
+    for (var attempt of openAttempts) {
+      await attempt();
+      await new Promise(r => setTimeout(r, 220));
+      menu = findMenu();
+      if (menu) break;
     }
     if (!menu) return false;
-    const options = Array.from(menu.querySelectorAll(".select__option, [class*='select__option'], [role='option']"));
-    for (const cand of candidates) {
-      const lower = String(cand).toLowerCase().trim();
-      const match = options.find(o => {
-        const t = o.textContent.trim().toLowerCase();
+    var options = Array.from(menu.querySelectorAll(".select__option, [class*='select__option'], [role='option']"));
+    for (var cand of candidates) {
+      var lower = String(cand).toLowerCase().trim();
+      var match = options.find(o => {
+        var t = o.textContent.trim().toLowerCase();
         return t === lower || t.startsWith(lower);
       });
       if (match) {
+        match.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
+        match.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
         match.click();
         await new Promise(r => setTimeout(r, 80));
         return true;
