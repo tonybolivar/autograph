@@ -64,10 +64,44 @@ var AG_ADAPTER_GREENHOUSE = {
 
   emptyPlaceholderValues: ["Select...", "Select", "", "Choose an option"],
 
-  async fillDropdown(el, fieldId, candidates) {
+  async fillDropdown(el, fieldId, candidates, ctx) {
     if (!candidates || candidates.length === 0) return false;
     var control = el.closest(".select__control, [class*='select__control']") || el;
     var input = control.querySelector("input[role='combobox']") || el;
+    if (el.id === "candidate-location" || (el.getAttribute && el.getAttribute("aria-autocomplete") === "list" && fieldId === "city")) {
+      var profile = ctx && ctx.masterProfile ? ctx.masterProfile : {};
+      var typed = profile.city ? profile.city : String(candidates[0]);
+      var proto = window.HTMLInputElement.prototype;
+      var setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+      input.focus();
+      if (setter) setter.call(input, ""); else input.value = "";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      if (setter) setter.call(input, typed); else input.value = typed;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      var pick = null;
+      var locOptions = [];
+      for (var waitStep = 0; waitStep < 8; waitStep++) {
+        await new Promise(r => setTimeout(r, 300));
+        var locMenu = control.parentElement?.querySelector(".select__menu, [class*='select__menu']") || document.querySelector(".select__menu, [class*='select__menu']");
+        if (!locMenu) continue;
+        locOptions = Array.from(locMenu.querySelectorAll(".select__option, [class*='select__option'], [role='option']"));
+        if (locOptions.length === 0) continue;
+        var loadingOnly = locOptions.length === 1 && /loading|searching/i.test(locOptions[0].textContent);
+        if (loadingOnly) continue;
+        break;
+      }
+      if (locOptions.length === 0) return false;
+      var stateLower = (profile.state_province || "").toLowerCase().trim();
+      var countryLower = (profile.country || "").toLowerCase().trim();
+      if (stateLower) pick = locOptions.find(o => o.textContent.toLowerCase().includes(stateLower));
+      if (!pick && countryLower) pick = locOptions.find(o => o.textContent.toLowerCase().includes(countryLower));
+      if (!pick) pick = locOptions[0];
+      pick.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
+      pick.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
+      pick.click();
+      await new Promise(r => setTimeout(r, 150));
+      return true;
+    }
     var findMenu = () => {
       var local = control.parentElement?.querySelector(".select__menu, [class*='select__menu']");
       if (local) return local;

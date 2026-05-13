@@ -42,6 +42,63 @@ async function main() {
   await page.goto(URL_, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(12000);
 
+  const voluntaryProbe = await page.evaluate(() => {
+    const fields = [['4033068002','Gender Identity'], ['4033069002','Race or Ethnicity'], ['4033070002','LGBTQ']];
+    return fields.map(([id, label]) => {
+      const el = document.getElementById(id);
+      if (!el) return { id, label, found: false };
+      const wrap = el.closest('[class*=select__control]');
+      return {
+        id, label,
+        value: el.value,
+        agFilled: el.getAttribute('data-ag-filled'),
+        wrapAgFilled: wrap?.getAttribute('data-ag-filled'),
+        siblingValueText: wrap?.querySelector('[class*=select__single-value]')?.textContent.trim() || null,
+        sectionHeading: el.closest('section, fieldset, [class*=demographic], [class*=voluntary]')?.querySelector('h2, h3, legend')?.textContent.trim()
+      };
+    });
+  });
+  console.log('=== VOLUNTARY PROBE ===');
+  for (const v of voluntaryProbe) console.log(JSON.stringify(v));
+
+  const locationProbe = await page.evaluate(() => {
+    const el = document.getElementById('candidate-location');
+    if (!el) return { found: false };
+    const control = el.closest('[class*=select__control]');
+    const single = control?.querySelector('[class*=select__single-value]');
+    // Walk ancestors looking for ag-filled
+    let cur = el;
+    let agAncestor = null;
+    while (cur) {
+      if (cur.getAttribute && cur.getAttribute('data-ag-filled') === 'true') { agAncestor = cur.tagName + '.' + (cur.className || '').slice(0, 40); break; }
+      cur = cur.parentElement;
+    }
+    return {
+      found: true,
+      inputValue: el.value,
+      agFilled: el.getAttribute('data-ag-filled'),
+      controlAg: control?.getAttribute('data-ag-filled'),
+      singleValueText: single?.textContent?.trim() || null,
+      agAncestor
+    };
+  });
+  console.log('LOCATION_PROBE:', JSON.stringify(locationProbe));
+
+  const raceOptions = await page.evaluate(async () => {
+    const el = document.getElementById('4033069002');
+    if (!el) return null;
+    const control = el.closest('[class*=select__control]');
+    control.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 }));
+    control.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, button: 0 }));
+    control.click();
+    await new Promise(r => setTimeout(r, 600));
+    const menu = control.parentElement?.querySelector('[class*=select__menu]') || document.querySelector('[class*=select__menu]');
+    if (!menu) return { menuOpen: false };
+    const opts = Array.from(menu.querySelectorAll('[class*=select__option], [role=option]')).map(o => o.textContent.trim().slice(0, 60));
+    return { menuOpen: true, opts };
+  });
+  console.log('RACE_OPTIONS:', JSON.stringify(raceOptions));
+
   const r = await page.evaluate(() => {
     const fields = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea'));
     const filled = [];
