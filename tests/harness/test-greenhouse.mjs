@@ -20,7 +20,9 @@ const PROFILE = {
   gender: 'Male', race: 'Hispanic or Latino', hispanic_ethnicity: 'Yes',
   current_company: 'Acme Corp', current_title: 'Software Engineer', years_experience: '3',
   education_school: 'Colgate University', education_degree: 'Bachelor of Arts', education_major: 'Computer Science',
-  education_end_month: 'May', education_end_year: '2025'
+  education_end_month: 'May', education_end_year: '2025',
+  why_this_company: 'I love the product and the engineering culture.',
+  referral_source: 'LinkedIn'
 };
 
 async function main() {
