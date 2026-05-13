@@ -20,6 +20,7 @@ var AG_PROFILE_FIELDS = [
   { id: "phone_type", label: "Phone Type", type: "text", section: "about" },
   { id: "phone_number", label: "Phone Number", type: "tel", section: "about" },
   { id: "phone_country", label: "Phone Country", type: "text", section: "about" },
+  { id: "phone_extension", label: "Phone Extension", type: "text", section: "about" },
   { id: "address_line_1", label: "Address Line 1", type: "text", section: "about" },
   { id: "city", label: "City", type: "text", section: "about" },
   { id: "state_province", label: "State / Province", type: "text", section: "about" },
