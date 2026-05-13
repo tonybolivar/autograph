@@ -122,13 +122,23 @@ function agExtractLabel(el) {
 
 function agExtractGroupLabel(el) {
   if (el.type !== "radio" && el.type !== "checkbox") return null;
+  var fsLegend = null;
   const fs = el.closest("fieldset");
   if (fs) {
     const lg = fs.querySelector(":scope > legend, :scope > label, :scope > [class*='label']");
-    if (lg && lg.textContent.trim()) return agCleanLabel(lg.textContent);
-    const anyLg = fs.querySelector("legend");
-    if (anyLg && anyLg.textContent.trim()) return agCleanLabel(anyLg.textContent);
+    if (lg && lg.textContent.trim()) fsLegend = agCleanLabel(lg.textContent);
+    else {
+      const anyLg = fs.querySelector("legend");
+      if (anyLg && anyLg.textContent.trim()) fsLegend = agCleanLabel(anyLg.textContent);
+    }
   }
+  var legendLooksLikeQuestion = function (txt) {
+    if (!txt) return false;
+    if (/\?/.test(txt)) return true;
+    if (/^\s*(are you|have you|do you|did you|will you|would you|can you|may we|what is your|what's your|which|why|how|when|where)\b/i.test(txt)) return true;
+    return false;
+  };
+  if (fsLegend && legendLooksLikeQuestion(fsLegend)) return fsLegend;
   const rg = el.closest("[role='radiogroup'], [role='group']");
   if (rg) {
     const rb = rg.getAttribute("aria-labelledby");
@@ -142,7 +152,7 @@ function agExtractGroupLabel(el) {
   let ancestor = el.parentElement;
   let depth = 0;
   while (ancestor && depth < 6) {
-    const hasMultipleRadios = ancestor.querySelectorAll(`input[type="radio"][name="${el.name ? CSS.escape(el.name) : ''}"]`).length > 1;
+    const hasMultipleRadios = ancestor.querySelectorAll(`input[type="${el.type}"][name="${el.name ? CSS.escape(el.name) : ''}"]`).length > 1;
     if (hasMultipleRadios) {
       const lg = ancestor.querySelector(":scope > legend, :scope > label, :scope > [class*='label'], :scope > [class*='heading'], :scope > h2, :scope > h3, :scope > h4, :scope > p");
       if (lg && lg.textContent.trim()) return agCleanLabel(lg.textContent);
@@ -162,7 +172,7 @@ function agExtractGroupLabel(el) {
     ancestor = ancestor.parentElement;
     depth++;
   }
-  return null;
+  return fsLegend;
 }
 
 function agExtractFieldId(el) {
