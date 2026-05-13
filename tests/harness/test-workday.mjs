@@ -16,14 +16,18 @@ const ACCOUNT_EMAIL = `tony.e.bolivar+wd${UNIQ}@gmail.com`;
 const PROFILE = {
   first_name: 'Anthony', last_name: 'Bolivar', email: 'tony.e.bolivar@gmail.com',
   phone_number: '(936) 419-2746', phone_type: 'Mobile',
-  address_line_1: '123 Main St', city: 'Hamilton', state_province: 'NY', zip_postal: '13346',
+  address_line_1: '123 Main St', city: 'Hamilton', state_province: 'New York', zip_postal: '13346',
   country: 'United States', phone_country: 'United States',
   linkedin_profile: 'https://www.linkedin.com/in/anthonybolivar',
   github_profile: 'https://github.com/abolivar', website: 'https://anthonybolivar.com',
-  work_authorization: 'Yes', need_sponsorship: 'No', willing_to_relocate: 'Yes',
+  work_authorization: 'Yes', need_sponsorship: 'No', willing_to_relocate: 'Yes', bound_by_noncompete: 'No',
   is_veteran: 'No', have_disability: 'No',
   gender: 'Male', race: 'Hispanic or Latino', hispanic_ethnicity: 'Yes',
   current_company: 'Acme Corp', current_title: 'Software Engineer', years_experience: '3',
+  education_school: 'Colgate University', education_degree: 'Bachelor of Arts', education_major: 'Computer Science',
+  education_end_month: 'May', education_end_year: '2025',
+  previously_employed_here: 'No', referral_source: 'LinkedIn',
+  why_this_company: 'I am excited to apply my engineering background at NVIDIA.',
   account_email: ACCOUNT_EMAIL,
   account_password: 'Autograph-Test-Pw-2026!'
 };
@@ -152,34 +156,84 @@ async function main() {
     });
   }
 
-  const afterVerify = await page.evaluate(() => {
-    var inputs = Array.from(document.querySelectorAll('input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea'));
-    function describe(el) {
-      var host = el.closest('[data-automation-id]');
+  async function probeStep(label) {
+    await page.waitForTimeout(8000);
+    var r = await page.evaluate(() => {
+      var inputs = Array.from(document.querySelectorAll('input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea, button[aria-haspopup="listbox"], [data-automation-id="multiSelectContainer"]'));
+      function describe(el) {
+        var host = el.closest('[data-automation-id]');
+        return {
+          tag: el.tagName,
+          type: el.type || null,
+          auto: el.getAttribute('data-automation-id') || host?.getAttribute('data-automation-id') || null,
+          ag: el.getAttribute('data-ag-filled') || el.closest('[data-ag-filled]')?.getAttribute('data-ag-filled') || null,
+          value: typeof el.value === 'string' ? el.value.slice(0, 60) : el.value,
+          text: (el.textContent || '').trim().slice(0, 60)
+        };
+      }
+      var ddDisplays = Array.from(document.querySelectorAll('[data-automation-id*="selectedItem"], [class*="selectedItem"]')).map(e => ({
+        host: e.closest('[data-automation-id]')?.getAttribute('data-automation-id'),
+        text: e.textContent.trim().slice(0, 50)
+      })).slice(0, 30);
       return {
-        type: el.type,
-        auto: el.getAttribute('data-automation-id') || host?.getAttribute('data-automation-id') || null,
-        ag: el.getAttribute('data-ag-filled') || el.closest('[data-ag-filled]')?.getAttribute('data-ag-filled') || null,
-        value: typeof el.value === 'string' ? el.value.slice(0, 50) : el.value
+        title: document.title,
+        url: location.href,
+        stepActive: document.querySelector('[data-automation-id="progressBarActiveStep"]')?.textContent.trim() || null,
+        inputCount: inputs.length,
+        filled: document.querySelectorAll('[data-ag-filled="true"]').length,
+        entries: inputs.slice(0, 80).map(describe),
+        ddDisplays,
+        errors: Array.from(document.querySelectorAll('[data-automation-id*="errorMessage"], [data-automation-id*="error_"], [role=alert]')).map(e => (e.textContent || '').trim().slice(0, 120)).filter(Boolean).slice(0, 8),
+        heading: (document.querySelector('h1, h2')?.textContent || '').trim().slice(0, 60)
       };
+    });
+    console.log(`\n=== STEP: ${label} === filled=${r.filled} / inputs=${r.inputCount} step=${r.stepActive} heading="${r.heading}"`);
+    if (r.errors.length) console.log('ERRORS:', JSON.stringify(r.errors));
+    if (r.ddDisplays.length) console.log('DD_DISPLAYS:', JSON.stringify(r.ddDisplays));
+    for (var f of r.entries) {
+      var flag = f.ag === 'true' ? '[F]' : (f.value ? '[v]' : '   ');
+      var label2 = String(f.auto || f.tag || '').slice(0, 50);
+      var val = JSON.stringify(f.value === undefined ? null : f.value).slice(0, 70);
+      console.log(`${flag} ${String(f.type || f.tag || '').padEnd(10)} ${label2.padEnd(50)} | ${val}`);
     }
-    return {
-      title: document.title,
-      url: location.href,
-      inputCount: inputs.length,
-      filled: document.querySelectorAll('[data-ag-filled="true"]').length,
-      pageText: document.body?.innerText?.slice(0, 400) || '',
-      entries: inputs.slice(0, 30).map(describe)
-    };
-  });
-  console.log('AFTER_VERIFY:', JSON.stringify(afterVerify, null, 2));
-  console.log('=== WORKDAY APPLICATION FILLED ===', afterVerify.filled, '/', afterVerify.inputCount);
-  for (var f of afterVerify.entries) {
-    var flag = f.ag === 'true' ? '[F]' : (f.value ? '[v]' : '   ');
-    console.log(`${flag} ${(f.type || '').padEnd(10)} ${(f.auto || '').padEnd(40)} | ${JSON.stringify(f.value)}`);
+    return r;
   }
 
-  await page.waitForTimeout(10000);
+  async function clickSaveAndContinue() {
+    var nextFilter = '[data-automation-id="pageFooterNextButton"] [data-automation-id="click_filter"]';
+    var nextBtn = '[data-automation-id="pageFooterNextButton"]';
+    var filterCount = await page.locator(nextFilter).count();
+    if (filterCount > 0) {
+      await page.locator(nextFilter).first().scrollIntoViewIfNeeded();
+      await page.locator(nextFilter).first().click({ timeout: 10000 });
+      return 'click_filter';
+    }
+    var btnCount = await page.locator(nextBtn).count();
+    if (btnCount > 0) {
+      await page.locator(nextBtn).first().scrollIntoViewIfNeeded();
+      await page.locator(nextBtn).first().click({ force: true, timeout: 10000 });
+      return 'force-button';
+    }
+    return null;
+  }
+
+  await probeStep('1 My Information');
+
+  for (var stepName of ['2 My Experience', '3 Application Questions', '4 Voluntary Disclosures', '5 Self Identify', '6 Review']) {
+    var via = await driveStep(page, `Save and Continue toward ${stepName}`, async () => {
+      var via = await clickSaveAndContinue();
+      return { via };
+    });
+    if (!via || !via.via) {
+      console.log(`STOPPED before ${stepName} (no Save/Continue button)`);
+      break;
+    }
+    await page.waitForTimeout(2500);
+    await probeStep(stepName);
+  }
+
+  console.log('\nSTOPPING BEFORE SUBMIT (Review step reached or earlier blocker).');
+  await page.waitForTimeout(15000);
   await ctx.close();
 }
 main().catch(e => { console.error(e); process.exit(1); });
