@@ -45,7 +45,7 @@ var AG_LABEL_ALIASES = [
   [["languages_spoken", "languages spoken", "what languages", "language proficiency", "spoken languages", "language skills"], "languages_spoken"],
   [["driving_license", "driving license", "driver's license", "drivers license", "valid license", "license to drive", "drivers_license"], "driving_license"],
   [["open_to_remote", "open to remote", "remote work", "willing to work remotely", "remote okay"], "open_to_remote"],
-  [["open_to_hybrid", "open to hybrid", "hybrid work", "hybrid okay"], "open_to_hybrid"],
+  [["open_to_hybrid", "open to hybrid", "hybrid work", "hybrid okay", "hybrid schedule", "able to work a hybrid"], "open_to_hybrid"],
   [["open_to_onsite", "open to onsite", "onsite work", "in office", "office work"], "open_to_onsite"],
   [["preferred_work_location", "preferred work location", "preferred location", "work location"], "preferred_work_location"],
   [["preferred_work_arrangement", "preferred arrangement", "work arrangement"], "preferred_work_arrangement"],
