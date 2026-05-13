@@ -39,7 +39,7 @@ async function agClearResume() {
   await chrome.storage.local.remove("resumeFile");
 }
 
-var AG_RESUME_LABEL_RE = /(?:^|[^a-zA-Z]|[a-z](?=[A-Z]))(resume|cv|curriculum\s*vitae)|upload\s*(?:your\s*)?resume/i;
+var AG_RESUME_LABEL_RE = /(?:^|[^a-zA-Z]|[a-z](?=[A-Z]))(resume|r[ée]sum[ée]|cv|curriculum\s*vitae)|upload\s*(?:your\s*)?(?:resume|r[ée]sum[ée])/i;
 var AG_COVER_LETTER_RE = /\bcover\s*letter\b/i;
 
 function agIsResumeFileInput(el) {
@@ -61,6 +61,25 @@ function agIsResumeFileInput(el) {
   if (AG_RESUME_LABEL_RE.test(labelText)) return true;
   const wrap = el.closest("[class*='resume'], [class*='Resume'], [class*='cv-'], [data-automation-id*='resume']");
   if (wrap) return true;
+  var ancestor = el.parentElement;
+  var hops = 0;
+  while (ancestor && hops < 4) {
+    var ownText = "";
+    for (var i = 0; i < ancestor.childNodes.length; i++) {
+      var node = ancestor.childNodes[i];
+      if (node.nodeType === 3) ownText += node.textContent;
+      else if (node.nodeType === 1 && node !== el && !node.contains(el)) {
+        ownText += " " + (node.textContent || "");
+      }
+    }
+    ownText = ownText.trim();
+    if (ownText && ownText.length < 200) {
+      if (AG_COVER_LETTER_RE.test(ownText)) return false;
+      if (AG_RESUME_LABEL_RE.test(ownText)) return true;
+    }
+    ancestor = ancestor.parentElement;
+    hops++;
+  }
   return false;
 }
 
