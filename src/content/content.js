@@ -268,7 +268,7 @@
 
         let usedProfile = false;
         let profileFieldId = null;
-        if (value === undefined && (isTextish(el) || agIsSelectField(el) || isCheckRadio(el))) {
+        if (value === undefined && (isTextish(el) || agIsSelectField(el) || isCheckRadio(el) || isDropdown(el))) {
           profileFieldId = agMatchToProfileField(label, fieldId);
           if (profileFieldId && profile[profileFieldId]) {
             const raw = profile[profileFieldId];
