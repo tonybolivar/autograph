@@ -31,5 +31,13 @@ var AG_ADAPTER_TEAMTAILOR = {
       return `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || undefined;
     }
     return undefined;
+  },
+
+  shouldFillResumeInput(el) {
+    var remoteUrl = document.querySelector(
+      'input[name="candidate[resume_remote_url]"], input[name*="resume_remote_url"]'
+    );
+    if (remoteUrl && remoteUrl.value && /^https?:\/\//.test(remoteUrl.value)) return false;
+    return undefined;
   }
 };
