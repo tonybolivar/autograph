@@ -218,6 +218,46 @@ var AG_VALUE_DENORMALIZERS = {
       }
     }
     return [canonical];
+  },
+  country: (canonical) => {
+    if (!canonical) return [];
+    var raw = String(canonical).trim();
+    if (/^(united states|usa|us|u\.s\.a?\.?|america)$/i.test(raw)) {
+      return [
+        "United States of America",
+        "United States",
+        "USA",
+        "US",
+        raw
+      ];
+    }
+    if (/^(united kingdom|uk|u\.k\.|britain|great britain)$/i.test(raw)) {
+      return [
+        "United Kingdom of Great Britain and Northern Ireland",
+        "United Kingdom",
+        "UK",
+        "GB",
+        raw
+      ];
+    }
+    return [raw];
+  },
+  phone_country: (canonical) => {
+    if (!canonical) return [];
+    var raw = String(canonical).trim();
+    if (/^(united states|usa|us|u\.s\.a?\.?|america)$/i.test(raw)) {
+      return [
+        "United States of America (+1)",
+        "United States (+1)",
+        "United States of America",
+        "United States",
+        "USA",
+        "US",
+        "+1",
+        raw
+      ];
+    }
+    return [raw];
   }
 };
 
