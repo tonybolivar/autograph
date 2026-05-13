@@ -26,6 +26,8 @@ var AG_ADAPTER_RIPPLING = {
     return el.getAttribute("role") === "combobox";
   },
 
+  emptyPlaceholderValues: ["Select...", "Select", "", "Choose...", "Search"],
+
   async fillDropdown(el, fieldId, candidates) {
     if (!candidates || candidates.length === 0) return false;
     el.click();
