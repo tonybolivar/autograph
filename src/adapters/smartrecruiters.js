@@ -1,6 +1,15 @@
 var AG_ADAPTER_SMARTRECRUITERS = {
   fieldSelector: 'input:not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]), select, textarea, [role="combobox"]',
 
+  shouldFillResumeInput(el) {
+    try {
+      var host = window.location.hostname || "";
+      if (host.includes("smartr.me")) return true;
+    } catch (e) {}
+    return undefined;
+  },
+
+
   getJobId(url) {
     const m = url.match(/smartrecruiters\.com\/[^/]+\/(\d+)/);
     return m ? m[1] : null;
