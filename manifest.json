@@ -98,6 +98,7 @@
         "src/lib/resume.js",
         "src/lib/customDomains.js",
         "src/lib/workHistory.js",
+        "src/lib/customQA.js",
         "src/adapters/_default.js",
         "src/adapters/workday.js",
         "src/adapters/smartrecruiters.js",
@@ -136,6 +137,7 @@
         "src/lib/resume.js",
         "src/lib/customDomains.js",
         "src/lib/workHistory.js",
+        "src/lib/customQA.js",
         "src/adapters/_default.js",
         "src/adapters/icims.js",
         "src/content/content.js"
@@ -159,6 +161,7 @@
         "src/lib/resume.js",
         "src/lib/customDomains.js",
         "src/lib/workHistory.js",
+        "src/lib/customQA.js",
         "src/adapters/_default.js",
         "src/adapters/greenhouse.js",
         "src/content/content.js"

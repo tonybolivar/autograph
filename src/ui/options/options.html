@@ -30,6 +30,7 @@
     <button class="tab" data-tab="employment">Employment</button>
     <button class="tab" data-tab="demographic">Demographics</button>
     <button class="tab" data-tab="resume">Resume</button>
+    <button class="tab" data-tab="custom-qa">Custom Q&A</button>
     <button class="tab" data-tab="sites">Sites</button>
     <button class="tab" data-tab="domains">Custom Domains</button>
     <button class="tab" data-tab="data">Data</button>
@@ -100,6 +101,17 @@
       </div>
     </section>
 
+    <section id="tab-custom-qa" class="panel">
+      <h2>Custom Q&A</h2>
+      <p class="panel-help">Define your own answers to questions Autograph doesn't know about. Each entry pairs a question pattern (substring match against the form's label) with the answer you'd give. Matches use word-overlap so paraphrased questions still hit.</p>
+      <form id="addQAForm" class="qa-form">
+        <input type="text" id="qaQuestion" placeholder="Question pattern (e.g. promotional product)" required>
+        <input type="text" id="qaAnswer" placeholder="Your answer" required>
+        <button type="submit" class="btn">Add</button>
+      </form>
+      <div id="customQAList"></div>
+    </section>
+
     <section id="tab-sites" class="panel">
       <h2>Supported Sites</h2>
       <p class="panel-help">Toggle Autograph off per platform if you want.</p>
@@ -155,6 +167,7 @@
   <script src="../../lib/resume.js"></script>
   <script src="../../lib/customDomains.js"></script>
   <script src="../../lib/workHistory.js"></script>
+  <script src="../../lib/customQA.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

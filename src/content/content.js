@@ -197,6 +197,7 @@
       const instanceData = currentInstanceKey ? await agLoadFieldData(currentInstanceKey) : {};
       const labels = await agLoadFieldLabels(currentSiteId);
       const workHistory = (typeof agLoadWorkHistory === "function") ? await agLoadWorkHistory() : [];
+      const customQA = (typeof agLoadCustomQA === "function") ? await agLoadCustomQA() : [];
 
       const currentJob = workHistory.find(j => j.is_current) || workHistory[0];
       if (currentJob) {
@@ -278,6 +279,11 @@
             value = AG_PHONE_TYPE_FALLBACKS.slice();
             usedProfile = true;
           }
+        }
+
+        if (value === undefined && customQA.length > 0 && typeof agFindCustomQAMatch === "function") {
+          const match = agFindCustomQAMatch(label, fieldId, customQA);
+          if (match) value = match.answer;
         }
 
         const declineEligible = value === undefined && agIsDemographicField(label, fieldId);

@@ -316,6 +316,34 @@ main {
   margin-top: 8px;
 }
 
+.qa-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.qa-form input {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  flex: 1;
+  min-width: 200px;
+}
+.qa-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.qa-question { font-weight: 600; font-size: 13px; }
+.qa-answer { color: #475569; font-size: 13px; word-break: break-word; }
+
 .resume-card {
   background: #fff;
   border: 1px solid #e2e8f0;

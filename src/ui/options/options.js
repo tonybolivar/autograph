@@ -291,6 +291,50 @@ document.addEventListener("click", async (e) => {
   }
 });
 
+async function renderCustomQA() {
+  const list = $("#customQAList");
+  if (!list) return;
+  list.innerHTML = "";
+  const entries = await agLoadCustomQA();
+  if (entries.length === 0) {
+    list.innerHTML = `<p class="panel-help">No custom Q&A yet. Add a question pattern and your answer; Autograph will autofill it whenever it sees a form field with a matching question.</p>`;
+    return;
+  }
+  for (const entry of entries) {
+    const row = document.createElement("div");
+    row.className = "qa-row";
+    const left = document.createElement("div");
+    left.className = "qa-question";
+    left.textContent = entry.question;
+    const right = document.createElement("div");
+    right.className = "qa-answer";
+    right.textContent = entry.answer;
+    const del = document.createElement("button");
+    del.className = "btn btn-warn";
+    del.textContent = "Delete";
+    del.addEventListener("click", async () => {
+      await agRemoveCustomQA(entry.id);
+      renderCustomQA();
+    });
+    row.appendChild(left);
+    row.appendChild(right);
+    row.appendChild(del);
+    list.appendChild(row);
+  }
+}
+
+document.addEventListener("submit", async (e) => {
+  if (e.target?.id !== "addQAForm") return;
+  e.preventDefault();
+  const q = $("#qaQuestion").value.trim();
+  const a = $("#qaAnswer").value.trim();
+  if (!q || !a) return;
+  await agAddCustomQA({ question: q, answer: a });
+  $("#qaQuestion").value = "";
+  $("#qaAnswer").value = "";
+  renderCustomQA();
+});
+
 async function renderResume() {
   const status = $("#resumeStatus");
   const meta = await agLoadResumeMeta();
@@ -376,6 +420,7 @@ function switchTab(name) {
   if (name === "resume") renderResume();
   if (name === "domains") renderDomains();
   if (name === "experience") renderWorkHistory();
+  if (name === "custom-qa") renderCustomQA();
 }
 
 $$(".tab").forEach(t => t.addEventListener("click", () => switchTab(t.dataset.tab)));
