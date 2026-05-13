@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const EXT = path.resolve(__dirname, '../..');
 
-const URL_ = 'https://job-boards.greenhouse.io/anthropic/jobs/5023394008';
+const URL_ = 'https://job-boards.greenhouse.io/discord/jobs/8517644002';
 
 const PROFILE = {
   first_name: 'Anthony', last_name: 'Bolivar', email: 'tony.e.bolivar@gmail.com',
@@ -40,7 +40,7 @@ async function main() {
   const page = await ctx.newPage();
   page.on('pageerror', e => console.log('[pageerror]', e.message.slice(0, 200)));
   await page.goto(URL_, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(12000);
 
   const r = await page.evaluate(() => {
     const fields = Array.from(document.querySelectorAll('input:not([type="hidden"]), select, textarea'));

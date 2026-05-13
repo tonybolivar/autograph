@@ -692,6 +692,14 @@
       chrome.runtime.sendMessage({ type: "AG_FILL_COMPLETE", count: filled, site: currentSiteId });
     }
     firstPassDone = true;
+    setTimeout(async () => {
+      if (!active) return;
+      const r2 = await runFillPass();
+      if (r2.filled > 0) {
+        bumpFillToast(r2.filled);
+        chrome.runtime.sendMessage({ type: "AG_FILL_COMPLETE", count: r2.filled, site: currentSiteId });
+      }
+    }, 2500);
   }
 
   function deactivate() {

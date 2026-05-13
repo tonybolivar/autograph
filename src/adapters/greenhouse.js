@@ -31,10 +31,12 @@ var AG_ADAPTER_GREENHOUSE = {
   },
 
   async waitForReady() {
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 1200));
     const start = Date.now();
-    while (Date.now() - start < 5000) {
-      if (document.querySelector('input#first_name, input#email, input[id^="question_"]')) return;
+    while (Date.now() - start < 8000) {
+      var basic = document.querySelector('input#first_name, input#email');
+      var eeoc = document.querySelectorAll('[class*="select__control"]').length >= 4;
+      if (basic && eeoc) return;
       await new Promise(r => setTimeout(r, 200));
     }
   },
