@@ -51,7 +51,7 @@ var AG_LABEL_ALIASES = [
   [["preferred_work_arrangement", "preferred arrangement", "work arrangement"], "preferred_work_arrangement"],
   [["open_to_contract", "open to contract", "contract work", "contractor"], "open_to_contract"],
   [["open_to_part_time", "open to part-time", "part time", "part-time okay"], "open_to_part_time"],
-  [["referral_source", "how did you hear about us", "how did you hear", "hear about this", "where did you hear", "source"], "referral_source"],
+  [["referral_source", "how did you hear about us", "how did you hear", "hear about this", "where did you hear", "how did you discover us", "how did you discover", "where did you discover", "discover us", "find out about us", "find us", "where did you find", "source"], "referral_source"],
   [["referred_by", "referred by", "referrer", "who referred you", "employee referral name"], "referred_by"],
   [["why_this_company", "why this company", "why our company", "why are you interested in our company", "why do you want to work at", "why do you want to join", "what excites you about", "what attracts you to", "why us"], "why_this_company"],
   [["why_this_role", "why this role", "why this position", "why are you interested", "interest in this role", "motivation", "tell us why", "why are you applying", "what interests you about this role"], "why_this_role"],

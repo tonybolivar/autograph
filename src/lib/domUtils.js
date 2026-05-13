@@ -152,10 +152,20 @@ function agExtractGroupLabel(el) {
   let ancestor = el.parentElement;
   let depth = 0;
   while (ancestor && depth < 6) {
-    const hasMultipleRadios = ancestor.querySelectorAll(`input[type="${el.type}"][name="${el.name ? CSS.escape(el.name) : ''}"]`).length > 1;
+    var sameNameSelector = el.name
+      ? `input[type="${el.type}"][name="${CSS.escape(el.name)}"]`
+      : `input[type="${el.type}"]:not([name]), input[type="${el.type}"][name=""]`;
+    const hasMultipleRadios = ancestor.querySelectorAll(sameNameSelector).length > 1;
     if (hasMultipleRadios) {
-      const lg = ancestor.querySelector(":scope > legend, :scope > label, :scope > [class*='label'], :scope > [class*='heading'], :scope > h2, :scope > h3, :scope > h4, :scope > p");
+      const lg = ancestor.querySelector(":scope > legend, :scope > label, :scope > [class*='label'], :scope > [class*='heading'], :scope > [class*='title'], :scope > [class*='Important'], :scope > h2, :scope > h3, :scope > h4, :scope > p");
       if (lg && lg.textContent.trim()) return agCleanLabel(lg.textContent);
+      for (var dch = ancestor.firstElementChild; dch; dch = dch.nextElementSibling) {
+        if (/^(SPAN|DIV)$/.test(dch.tagName)) {
+          if (dch.querySelector("input, select, textarea")) continue;
+          var dt = (dch.textContent || "").trim();
+          if (dt && dt.length < 220) return agCleanLabel(dt);
+        }
+      }
       let sib = ancestor.previousElementSibling;
       let sHops = 0;
       while (sib && sHops < 3) {
