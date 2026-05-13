@@ -217,6 +217,11 @@
           if (recalled !== undefined) value = recalled;
         }
 
+        if (value === undefined && adapter.synthesizeValue) {
+          const synth = adapter.synthesizeValue(profile, fieldId, label, el);
+          if (synth !== undefined && synth !== null) value = synth;
+        }
+
         let usedProfile = false;
         let profileFieldId = null;
         if (value === undefined && (isTextish(el) || agIsSelectField(el) || isCheckRadio(el))) {

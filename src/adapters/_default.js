@@ -29,5 +29,6 @@ const AG_ADAPTER_DEFAULT = {
   gateFillOnVisibility: false,
   suppressRefillOnRerender: false,
   getHighlightSelector: null,
-  getTextValue: (el) => el.value
+  getTextValue: (el) => el.value,
+  synthesizeValue: null
 };
