@@ -13,6 +13,10 @@ var AG_ADAPTER_GREENHOUSE = {
     if (el.classList && el.classList.contains("iti__tel-input")) return false;
     if (el.closest && el.closest(".phone-input__country")) return true;
     if (el.closest && el.closest(".iti__dropdown-content, .iti__country-list, .iti__flag-container")) return true;
+    if (el.id === "country" && el.getAttribute("role") === "combobox") {
+      var phoneWrap = el.closest("[class*='intl-tel'], [class*='phone'], .iti");
+      if (phoneWrap) return true;
+    }
     return false;
   },
 

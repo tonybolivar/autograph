@@ -12,6 +12,7 @@
   let observer = null;
   let observerTimer = null;
   const seenFields = new WeakSet();
+  const fillAttempts = new WeakMap();
   const inflightDropdownFields = new Set();
   const filledHighlightSelectors = new Set();
   const suppressedFieldIds = new Set();
@@ -327,8 +328,9 @@
             continue;
           }
           inflightDropdownFields.add(fieldId);
+          let ok = false;
           try {
-            const ok = await fillElement(el, fieldId, value, { declineEligible, masterProfile: profile });
+            ok = await fillElement(el, fieldId, value, { declineEligible, masterProfile: profile });
             if (ok) {
               highlight(el, fieldId);
               filled++;
@@ -337,6 +339,15 @@
             }
           } finally {
             inflightDropdownFields.delete(fieldId);
+          }
+          if (!ok && (isDropdown(el) || agIsSelectField(el))) {
+            const tries = (fillAttempts.get(el) || 0) + 1;
+            fillAttempts.set(el, tries);
+            if (tries < 3) {
+              attachCapture(el, fieldId, labelKey);
+              observedFieldIds.add(fieldId);
+              continue;
+            }
           }
         }
 
