@@ -65,6 +65,9 @@ var AG_PROFILE_FIELDS = [
   { id: "currently_employed", label: "Currently Employed?", type: "select", section: "logistics", options: ["", "Yes", "No"] },
   { id: "in_notice_period", label: "Currently in Notice Period?", type: "select", section: "logistics", options: ["", "Yes", "No"] },
   { id: "previously_employed_here", label: "Previously Employed at This Company?", type: "select", section: "logistics", options: ["", "Yes", "No"] },
+  { id: "age_over_18", label: "Are you 18 or older?", type: "select", section: "logistics", options: ["", "Yes", "No"] },
+  { id: "languages_spoken", label: "Languages Spoken", type: "text", section: "logistics" },
+  { id: "driving_license", label: "Valid Driving License?", type: "select", section: "logistics", options: ["", "Yes", "No"] },
 
   { id: "open_to_remote", label: "Open to Remote?", type: "select", section: "preferences", options: ["", "Yes", "No", "Hybrid only"] },
   { id: "open_to_hybrid", label: "Open to Hybrid?", type: "select", section: "preferences", options: ["", "Yes", "No"] },
