@@ -204,6 +204,7 @@ var AG_ADAPTER_WORKDAY = {
     el.dispatchEvent(new Event("input", { bubbles: true }));
     el.dispatchEvent(new Event("change", { bubbles: true }));
     el.dispatchEvent(new Event("blur", { bubbles: true }));
+    try { el.setAttribute("data-ag-filled", "true"); } catch (e) {}
   },
 
   _pageKey() {
