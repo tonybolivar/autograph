@@ -1,5 +1,5 @@
 var AG_LABEL_ALIASES = [
-  [["first_name", "first name", "firstname", "given_name", "given name", "fname", "legalname--firstname"], "first_name"],
+  [["first_name", "first name", "firstname", "given_name", "given name", "given names", "given name(s)", "fname", "legalname--firstname"], "first_name"],
   [["last_name", "last name", "lastname", "surname", "family_name", "family name", "lname", "legalname--lastname"], "last_name"],
   [["email", "e-mail", "email_address", "emailaddress", "email address"], "email"],
   [["address_line_1", "address line 1", "address1", "address 1", "street_address", "street address", "streetaddress", "addressline1", "addresssection--addressline1", "addressstreet1"], "address_line_1"],
@@ -7,9 +7,9 @@ var AG_LABEL_ALIASES = [
   [["state_province", "state / province", "state/province", "state", "province", "region", "county", "addresssection--countryregion"], "state_province"],
   [["zip_postal", "zip / postal", "zip", "postal", "postcode", "zipcode", "zip_code", "zip code", "postal_code", "postal code", "postalcode", "addresssection--postalcode"], "zip_postal"],
   [["country", "country_region", "country/region", "addresssection--country"], "country"],
-  [["phone_type", "phone type", "phonetype", "device_type", "device type", "phone--phonetype"], "phone_type"],
+  [["phone_type", "phone type", "phonetype", "device_type", "device type", "phone device type", "phone--phonetype"], "phone_type"],
   [["phone_number", "phone number", "phonenumber", "phone", "telephone", "tel", "mobile", "cell", "phone--number", "primary phone", "primary telephone", "cell phone", "cell number", "mobile phone", "mobile number", "contact phone", "telephone number"], "phone_number"],
-  [["phone_country", "phone country", "phonecountry", "dial code", "country code", "country_code", "phone--country", "phone dial code", "country phone code", "countryphonecode"], "phone_country"],
+  [["phone_country", "phone country", "phonecountry", "dial code", "country code", "country_code", "phone--country", "phone dial code", "country phone code", "countryphonecode", "location phone code"], "phone_country"],
   [["phone_extension", "phone extension", "phoneextension", "phone ext", "extension", "ext."], "phone_extension"],
   [["linkedin", "linkedin_profile", "linkedin profile", "linkedin url", "linkedin profile url", "linkedin_url", "linkedinurl", "linkedinaccount", "linkedin_link", "linkedin link", "sitelink-1"], "linkedin_profile"],
   [["website", "personal website", "portfolio", "portfolio url", "portfolio website", "personal_website", "your website", "website url", "personal site", "portfolio link", "website_url", "personalwebsite"], "website"],
