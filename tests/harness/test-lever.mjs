@@ -12,6 +12,7 @@ const PROFILE = {
   first_name: 'Anthony', last_name: 'Bolivar',
   email: 'tony.e.bolivar@gmail.com',
   phone_number: '(936) 419-2746', phone_type: 'Mobile',
+  personal_pronouns: 'he/him',
   city: 'Hamilton', state_province: 'NY', zip_postal: '13346',
   country: 'United States', phone_country: 'United States',
   linkedin_profile: 'https://www.linkedin.com/in/anthonybolivar',
