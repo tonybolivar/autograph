@@ -11,11 +11,11 @@ const AG_ADAPTER_GREENHOUSE = {
     if (el.classList && el.classList.contains("iti__search-input")) return true;
     if (el.id && /^iti-\d+__search-input$/.test(el.id)) return true;
     if (el.closest && el.closest(".iti, [class*='iti__'], [class*='iti--']")) return true;
+    if (el.closest && el.closest(".phone-input__country")) return true;
     return false;
   },
 
   getFieldId(el) {
-    if (el.closest && el.closest(".phone-input__country")) return "phone_country";
     if (el.id && !/^react|^:r/.test(el.id)) return el.id;
     if (el.name) return el.name;
     return null;
