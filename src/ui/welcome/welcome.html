@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome to Autograph</title>
+  <link rel="stylesheet" href="welcome.css">
+</head>
+<body>
+  <main class="hero">
+    <div class="logo">A</div>
+    <h1>Welcome to Autograph</h1>
+    <p class="lede">Fill out the basics once. Autograph handles every job application from now on.</p>
+
+    <form id="wizard">
+      <div class="row">
+        <label>First name<input data-field="first_name" required></label>
+        <label>Last name<input data-field="last_name" required></label>
+      </div>
+      <label>Email<input type="email" data-field="email" required></label>
+      <label>Phone number<input type="tel" data-field="phone_number"></label>
+      <label>LinkedIn profile URL<input type="url" data-field="linkedin_profile" placeholder="https://linkedin.com/in/yourhandle"></label>
+      <div class="row">
+        <label>City<input data-field="city"></label>
+        <label>State / Province<input data-field="state_province"></label>
+      </div>
+      <div class="row">
+        <label>Zip / Postal<input data-field="zip_postal"></label>
+        <label>Country<input data-field="country"></label>
+      </div>
+
+      <button type="submit" class="cta">Save and finish</button>
+      <button type="button" class="skip" id="skipBtn">Skip for now</button>
+    </form>
+
+    <p class="micro">You can edit everything later in the Autograph options page. Nothing here gets sent anywhere; it lives in Chrome's local profile storage.</p>
+  </main>
+
+  <script src="../../lib/normalizers.js"></script>
+  <script src="../../lib/masterProfile.js"></script>
+  <script src="welcome.js"></script>
+</body>
+</html>

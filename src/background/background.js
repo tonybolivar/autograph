@@ -2,7 +2,7 @@ chrome.sidePanel?.setPanelBehavior({ openPanelOnActionClick: true }).catch(() =>
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === "install") {
-    chrome.runtime.openOptionsPage();
+    chrome.tabs.create({ url: chrome.runtime.getURL("src/ui/welcome/welcome.html") });
   }
 });
 
