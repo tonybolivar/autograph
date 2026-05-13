@@ -26,15 +26,13 @@ var AG_ADAPTER_EIGHTFOLD = {
   },
 
   suppressRefillOnRerender: true,
-  gateFillOnVisibility: true,
 
   async waitForReady() {
     await new Promise(r => setTimeout(r, 1500));
     var start = Date.now();
     while (Date.now() - start < 6000) {
-      var modal = document.querySelector(".ant-modal-open, [role='dialog']:not([aria-hidden='true']), .ant-modal-wrap:not([style*='display: none'])");
       var hasForm = document.querySelector("input[id^='Contact_Information_'], input[name^='Contact_Information']");
-      if (hasForm && !modal) return;
+      if (hasForm) return;
       await new Promise(r => setTimeout(r, 200));
     }
   },
