@@ -124,6 +124,23 @@ var AG_VALUE_DENORMALIZERS = {
     const lower = canonical.toLowerCase();
     return [canonical, ...AG_PHONE_TYPE_FALLBACKS.filter(t => t.toLowerCase() !== lower)];
   },
+  personal_pronouns: (canonical) => {
+    if (!canonical) return [];
+    const raw = String(canonical).toLowerCase().trim();
+    const variants = new Set([canonical, raw]);
+    if (/\bhe\b|\bhim\b|^he\/him\b/.test(raw)) {
+      variants.add("He/him"); variants.add("He/Him"); variants.add("he/him"); variants.add("He"); variants.add("Him");
+    }
+    if (/\bshe\b|\bher\b|^she\/her\b/.test(raw)) {
+      variants.add("She/her"); variants.add("She/Her"); variants.add("she/her"); variants.add("She"); variants.add("Her");
+    }
+    if (/\bthey\b|\bthem\b|they\/them/.test(raw)) {
+      variants.add("They/them"); variants.add("They/Them"); variants.add("they/them"); variants.add("They"); variants.add("Them");
+    }
+    if (/\bxe\b|\bxem\b/.test(raw)) { variants.add("Xe/xem"); variants.add("Xe"); }
+    if (/\bze\b|\bhir\b/.test(raw)) { variants.add("Ze/hir"); variants.add("Ze"); }
+    return Array.from(variants);
+  },
   gender: (canonical) => {
     switch (canonical) {
       case "Male": return ["Male", "Man", "M", "male"];
