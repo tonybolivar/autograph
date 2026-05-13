@@ -107,5 +107,39 @@ var AG_ADAPTER_ASHBY = {
       return parts.length ? parts.join(", ") : undefined;
     }
     return undefined;
+  },
+
+  isExcluded(el) {
+    if (el.type === "checkbox" && el.closest("._yesno_17tft_149, [class*='_yesno_']")) return true;
+    return false;
+  },
+
+  async prefillPass({ profile }) {
+    const yesnoContainers = Array.from(document.querySelectorAll("._yesno_17tft_149, [class*='_yesno_']"));
+    for (const container of yesnoContainers) {
+      const fieldEntry = container.closest("._fieldEntry_17tft_29, .ashby-application-form-field-entry") || container;
+      const labelEl = fieldEntry.querySelector("label, [class*='_heading_'], [class*='_label_']");
+      const labelText = labelEl ? labelEl.textContent.trim() : "";
+      const fieldId = typeof agMatchToProfileField === "function" ? agMatchToProfileField(labelText, "") : null;
+      const raw = fieldId ? profile[fieldId] : undefined;
+      if (!labelText || !fieldId || !raw) continue;
+      const wantYes = raw === "Yes" || raw === true || raw === "true";
+      const buttons = container.querySelectorAll("button");
+      let target = null;
+      for (const btn of buttons) {
+        const txt = btn.textContent.trim().toLowerCase();
+        if (wantYes && txt === "yes") { target = btn; break; }
+        if (!wantYes && txt === "no") { target = btn; break; }
+      }
+      if (target) {
+        if (/_active_/.test(target.className)) continue;
+        try {
+          target.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, button: 0 }));
+          target.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, button: 0 }));
+          target.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+        } catch (e) {}
+        await new Promise(r => setTimeout(r, 200));
+      }
+    }
   }
 };

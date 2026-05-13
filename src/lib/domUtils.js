@@ -178,31 +178,40 @@ function agSetCheckedSafe(el, target) {
     }
   }
 
-  const tryClickLabel = () => {
+  const associatedLabel = () => {
     const wrap = el.closest("label");
-    if (wrap) { try { wrap.click(); } catch (e) {} return; }
-    if (el.id) {
-      const lbl = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
-      if (lbl) { try { lbl.click(); } catch (e) {} }
-    }
+    if (wrap) return wrap;
+    if (el.id) return document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+    return null;
   };
 
   if (target && el.type === "radio") {
-    if (setter) setter.call(el, true);
-    else el.checked = true;
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-    if (!el.checked) { try { el.click(); } catch (e) {} }
-    if (!el.checked) tryClickLabel();
+    const lbl = associatedLabel();
+    if (lbl) {
+      try { lbl.click(); } catch (e) {}
+      if (!el.checked) { try { el.click(); } catch (e) {} }
+    } else {
+      try { el.click(); } catch (e) {}
+      if (!el.checked) {
+        if (setter) setter.call(el, true);
+        else el.checked = true;
+      }
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
   } else if (el.type === "checkbox") {
-    if (el.checked !== target) { try { el.click(); } catch (e) {} }
+    const lbl = associatedLabel();
+    if (lbl && lbl !== el) {
+      try { lbl.click(); } catch (e) {}
+    } else {
+      try { el.click(); } catch (e) {}
+    }
     if (el.checked !== target) {
       if (setter) setter.call(el, target);
       else el.checked = target;
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     }
-    if (el.checked !== target) tryClickLabel();
   } else {
     if (setter) setter.call(el, target);
     else el.checked = target;

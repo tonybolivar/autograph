@@ -137,6 +137,25 @@ async function main() {
   });
   console.log('Page-world scope probe (should be undefined - different world):', scopeProbe);
 
+  const yesnoStatus = await page.evaluate(() => {
+    const containers = document.querySelectorAll("._yesno_17tft_149, [class*='_yesno_']");
+    return Array.from(containers).map(c => {
+      const fieldEntry = c.closest("._fieldEntry_17tft_29, .ashby-application-form-field-entry") || c;
+      const question = fieldEntry.querySelector("label, [class*='_heading_'], [class*='_label_']")?.textContent.trim().slice(0, 60) || '';
+      const buttons = Array.from(c.querySelectorAll("button")).map(b => ({
+        text: b.textContent.trim().slice(0, 10),
+        cls: b.className.slice(0, 80),
+        ariaPressed: b.getAttribute('aria-pressed')
+      }));
+      return { question, buttons };
+    });
+  });
+  console.log('\n=== Ashby yes/no buttons ===');
+  for (const yn of yesnoStatus) {
+    console.log(`Q: ${yn.question}`);
+    for (const b of yn.buttons) console.log(`  ${b.text} (aria-pressed=${b.ariaPressed}) cls=${b.cls.slice(0, 80)}`);
+  }
+
   const results = await page.evaluate(() => {
     const out = { fields: [], counters: {}, resume: {} };
     const fields = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea'));
