@@ -79,6 +79,33 @@ function agExtractLabel(el) {
     cursor = cursor.previousElementSibling;
     hops++;
   }
+  let ancestor = el.parentElement;
+  let aHops = 0;
+  while (ancestor && aHops < 5) {
+    let sib = ancestor.previousElementSibling;
+    let sHops = 0;
+    while (sib && sHops < 3) {
+      const text = (sib.textContent || "").trim();
+      const hasFormInside = sib.querySelector && sib.querySelector("input, select, textarea");
+      if (text && text.length < 120 && !hasFormInside) {
+        return agCleanLabel(text);
+      }
+      sib = sib.previousElementSibling;
+      sHops++;
+    }
+    if (ancestor.children && ancestor.children.length <= 8) {
+      const first = ancestor.firstElementChild;
+      if (first && first !== el && !first.contains(el)) {
+        const fText = (first.textContent || "").trim();
+        const fHasForm = first.querySelector && first.querySelector("input, select, textarea");
+        if (fText && fText.length < 120 && !fHasForm) {
+          return agCleanLabel(fText);
+        }
+      }
+    }
+    ancestor = ancestor.parentElement;
+    aHops++;
+  }
   const placeholder = el.getAttribute("placeholder");
   if (placeholder && placeholder.trim()) return agCleanLabel(placeholder);
   return "";
@@ -151,24 +178,31 @@ function agSetCheckedSafe(el, target) {
     }
   }
 
+  const tryClickLabel = () => {
+    const wrap = el.closest("label");
+    if (wrap) { try { wrap.click(); } catch (e) {} return; }
+    if (el.id) {
+      const lbl = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+      if (lbl) { try { lbl.click(); } catch (e) {} }
+    }
+  };
+
   if (target && el.type === "radio") {
     if (setter) setter.call(el, true);
     else el.checked = true;
     el.dispatchEvent(new Event("input", { bubbles: true }));
     el.dispatchEvent(new Event("change", { bubbles: true }));
-    if (!el.checked) {
-      try { el.click(); } catch (e) {}
-    }
+    if (!el.checked) { try { el.click(); } catch (e) {} }
+    if (!el.checked) tryClickLabel();
   } else if (el.type === "checkbox") {
-    if (el.checked !== target) {
-      try { el.click(); } catch (e) {}
-    }
+    if (el.checked !== target) { try { el.click(); } catch (e) {} }
     if (el.checked !== target) {
       if (setter) setter.call(el, target);
       else el.checked = target;
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     }
+    if (el.checked !== target) tryClickLabel();
   } else {
     if (setter) setter.call(el, target);
     else el.checked = target;
@@ -214,16 +248,26 @@ function agFillTextField(el, value) {
 
 function agFillSelect(el, candidates) {
   const options = Array.from(el.options);
+  const proto = window.HTMLSelectElement.prototype;
+  const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
   for (const cand of candidates) {
-    const lower = cand.toLowerCase();
-    const opt = options.find(o =>
-      o.value === cand ||
-      o.textContent.trim() === cand ||
+    const c = String(cand);
+    const lower = c.toLowerCase();
+    let opt = options.find(o =>
+      o.value === c ||
+      o.textContent.trim() === c ||
       o.value.toLowerCase() === lower ||
       o.textContent.trim().toLowerCase() === lower
     );
+    if (!opt) {
+      opt = options.find(o => o.textContent.trim().toLowerCase().startsWith(lower) && lower.length >= 2);
+    }
     if (opt) {
-      el.value = opt.value;
+      el.focus();
+      if (setter) setter.call(el, opt.value);
+      else el.value = opt.value;
+      el.selectedIndex = opt.index;
+      opt.selected = true;
       agFireFieldEvents(el);
       return true;
     }
