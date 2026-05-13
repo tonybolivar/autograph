@@ -178,9 +178,33 @@ var AG_ADAPTER_WORKDAY = {
   },
 
   async prefillPass({ workHistory, profile }) {
+    var advanced = await this._maybeAdvanceSignInGate(profile);
+    if (advanced) return;
     await this._maybeExpandWorkHistory(workHistory);
     await this._maybeAttachResume();
     await this._maybeFillAccountCreation(profile);
+  },
+
+  async _maybeAdvanceSignInGate(profile) {
+    if (!profile || !profile.account_email || !profile.account_password) return false;
+    if (document.querySelector('input[data-automation-id="verifyPassword"]')) return false;
+    var key = this._pageKey();
+    var emailChoice = document.querySelector('[data-automation-id="SignInWithEmailButton"]');
+    if (emailChoice && window.__autograph_wd_emailChoice !== key) {
+      window.__autograph_wd_emailChoice = key;
+      emailChoice.click();
+      await new Promise(r => setTimeout(r, 1800));
+      return true;
+    }
+    var createBtn = Array.from(document.querySelectorAll('button, a'))
+      .find(b => /^\s*create account\s*$/i.test((b.textContent || "").trim()));
+    if (createBtn && window.__autograph_wd_createChoice !== key) {
+      window.__autograph_wd_createChoice = key;
+      createBtn.click();
+      await new Promise(r => setTimeout(r, 1800));
+      return true;
+    }
+    return false;
   },
 
   async _maybeFillAccountCreation(profile) {

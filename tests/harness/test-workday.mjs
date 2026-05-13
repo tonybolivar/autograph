@@ -68,27 +68,9 @@ async function main() {
       return { ok: true };
     });
   });
-  await page.waitForTimeout(4500);
-
-  await driveStep(page, 'click Sign in with email', async () => {
-    return await page.evaluate(() => {
-      var b = document.querySelector('[data-automation-id="SignInWithEmailButton"]') || Array.from(document.querySelectorAll('button, a')).find(x => /sign in with email/i.test((x.textContent || '').trim()));
-      if (!b) return { ok: false };
-      b.click();
-      return { ok: true };
-    });
-  });
-  await page.waitForTimeout(4000);
-
-  await driveStep(page, 'click Create Account', async () => {
-    return await page.evaluate(() => {
-      var b = Array.from(document.querySelectorAll('button, a')).find(x => /create account/i.test((x.textContent || '').trim()));
-      if (!b) return { ok: false };
-      b.click();
-      return { ok: true };
-    });
-  });
-  await page.waitForTimeout(6000);
+  // From here the Workday adapter's prefillPass auto-advances:
+  // Sign in with email click, then Create Account click, then fills email/password/verifyPassword.
+  await page.waitForTimeout(12000);
 
   const r = await page.evaluate(() => {
     var inputs = Array.from(document.querySelectorAll('input:not([type=hidden]):not([type=submit]):not([type=button]), select, textarea'));
