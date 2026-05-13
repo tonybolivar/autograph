@@ -31,9 +31,30 @@ var AG_ADAPTER_BREEZYHR = {
     return null;
   },
 
-  async prefillPass({ workHistory }) {
-    if (!workHistory || workHistory.length === 0) return;
-    await this._fillWorkExperienceRows(workHistory);
+  async prefillPass({ workHistory, profile }) {
+    if (workHistory && workHistory.length > 0) await this._fillWorkExperienceRows(workHistory);
+    await this._fillAngularSelects(profile);
+  },
+
+  async _fillAngularSelects(profile) {
+    const selects = document.querySelectorAll('select[ng-model]');
+    for (const sel of selects) {
+      if (sel.selectedIndex > 0 && !sel.value.startsWith("? undefined")) continue;
+      const ngModel = sel.getAttribute("ng-model");
+      if (!ngModel) continue;
+      const labelEl = sel.closest("dl, .form-group, .question, .form-field, fieldset, label")?.querySelector("label, .label, dt");
+      const labelText = labelEl ? labelEl.textContent.trim() : "";
+      const fieldId = typeof agMatchToProfileField === "function" ? agMatchToProfileField(labelText, sel.name || "") : null;
+      if (!fieldId || !profile[fieldId]) continue;
+      const value = profile[fieldId];
+      const options = Array.from(sel.options).filter(o => o.textContent.trim() && !o.value.startsWith("? undefined"));
+      const matched = options.find(o => o.value === value || o.textContent.trim() === value);
+      if (!matched) continue;
+      const selector = sel.name ? `select[name="${sel.name}"]` : (sel.id ? `select#${sel.id}` : null);
+      if (!selector) continue;
+      window.postMessage({ __autograph: "angular_fill", selector, ngModel, value: matched.value }, "*");
+      await new Promise(r => setTimeout(r, 100));
+    }
   },
 
   async _fillWorkExperienceRows(workHistory) {

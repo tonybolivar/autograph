@@ -182,6 +182,12 @@
       "world": "MAIN"
     },
     {
+      "matches": ["*://*.breezy.hr/*"],
+      "js": ["src/adapters/breezyhr-main.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
       "matches": ["*://*.paylocity.com/*"],
       "js": ["src/adapters/paylocity-main.js"],
       "run_at": "document_idle",

@@ -280,11 +280,16 @@ function agFillSelect(el, candidates) {
     }
     if (opt) {
       el.focus();
+      el.dispatchEvent(new Event("focusin", { bubbles: true }));
+      for (const o of options) o.selected = (o === opt);
+      opt.selected = true;
+      try { opt.click(); } catch (e) {}
       if (setter) setter.call(el, opt.value);
       else el.value = opt.value;
       el.selectedIndex = opt.index;
-      opt.selected = true;
-      agFireFieldEvents(el);
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+      el.dispatchEvent(new Event("blur", { bubbles: true }));
       return true;
     }
   }
