@@ -10,8 +10,9 @@ var AG_ADAPTER_GREENHOUSE = {
     if (el.name === "g-recaptcha-response") return true;
     if (el.classList && el.classList.contains("iti__search-input")) return true;
     if (el.id && /^iti-\d+__search-input$/.test(el.id)) return true;
-    if (el.closest && el.closest(".iti, [class*='iti__'], [class*='iti--']")) return true;
+    if (el.classList && el.classList.contains("iti__tel-input")) return false;
     if (el.closest && el.closest(".phone-input__country")) return true;
+    if (el.closest && el.closest(".iti__dropdown-content, .iti__country-list, .iti__flag-container")) return true;
     return false;
   },
 

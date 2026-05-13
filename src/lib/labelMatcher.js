@@ -71,10 +71,12 @@ function agMatchToProfileField(label, fieldId) {
     }
   }
 
-  const tokenSep = /[\s_\-/]/;
+  const AG_SHORT_ALIAS_SKIP = new Set(["name", "title", "position", "city", "country", "state", "company", "phone", "tel", "email", "url"]);
+
   for (const [aliases, target] of AG_LABEL_ALIASES) {
     for (const alias of aliases) {
-      if (!tokenSep.test(alias)) continue;
+      if (alias.length < 3) continue;
+      if (AG_SHORT_ALIAS_SKIP.has(alias)) continue;
       const re = new RegExp(`(?:^|[\\s_\\-/])${_agEscapeRegex(alias)}(?:$|[\\s_\\-/:?.!,;])`);
       const labHit = !labOversized && re.test(lab);
       const fidHit = re.test(fid);

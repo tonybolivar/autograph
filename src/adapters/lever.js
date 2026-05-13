@@ -35,12 +35,19 @@ var AG_ADAPTER_LEVER = {
     if (el.name === "location") return "Location";
     const urlMatch = el.name && el.name.match(/^urls\[(.+)\]$/);
     if (urlMatch) return `${urlMatch[1]} URL`;
-    const question = el.closest(".application-question, .application-field, .application-additional");
+    const question = el.closest(".application-question");
     if (question) {
-      const labelEl = question.querySelector(".application-label, .text, label, .question");
-      if (labelEl && labelEl.textContent.trim()) {
-        return labelEl.textContent.replace(/\*$/, "").trim();
+      const labelEl = question.querySelector(":scope > .application-label, :scope > .question");
+      if (labelEl && labelEl.textContent.trim()) return labelEl.textContent.replace(/\*$/, "").trim();
+      const first = question.firstElementChild;
+      if (first && !first.querySelector("input, select, textarea") && first.textContent.trim()) {
+        return first.textContent.replace(/\*$/, "").trim();
       }
+    }
+    const wrap = el.closest(".application-additional, .application-field");
+    if (wrap) {
+      const labelEl = wrap.querySelector(".application-label, .text:not(.applicant-info), .question");
+      if (labelEl && labelEl.textContent.trim()) return labelEl.textContent.replace(/\*$/, "").trim();
     }
     return null;
   },
