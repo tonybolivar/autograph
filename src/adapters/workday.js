@@ -189,6 +189,13 @@ var AG_ADAPTER_WORKDAY = {
     if (!profile || !profile.account_email || !profile.account_password) return false;
     if (document.querySelector('input[data-automation-id="verifyPassword"]')) return false;
     var key = this._pageKey();
+    var applyManually = document.querySelector('[data-automation-id="applyManually"]');
+    if (applyManually && window.__autograph_wd_applyManually !== key) {
+      window.__autograph_wd_applyManually = key;
+      applyManually.click();
+      await new Promise(r => setTimeout(r, 1800));
+      return true;
+    }
     var emailChoice = document.querySelector('[data-automation-id="SignInWithEmailButton"]');
     if (emailChoice && window.__autograph_wd_emailChoice !== key) {
       window.__autograph_wd_emailChoice = key;
