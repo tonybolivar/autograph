@@ -34,7 +34,50 @@ var AG_ADAPTER_BREEZYHR = {
 
   async prefillPass({ workHistory, profile }) {
     if (workHistory && workHistory.length > 0) await this._fillWorkExperienceRows(workHistory);
+    if (profile && (profile.education_school || profile.education_degree || profile.education_major)) {
+      await this._fillEducationRows(profile);
+    }
     await this._fillAngularSelects(profile);
+  },
+
+  async _fillEducationRows(profile) {
+    var existing = document.querySelectorAll("li.education").length;
+    if (existing === 0) {
+      var addLink = Array.from(document.querySelectorAll("a, button")).find(b => /^Add Education$/i.test((b.textContent || "").trim()));
+      if (!addLink || !addLink.offsetParent) return;
+      addLink.click();
+      await new Promise(r => setTimeout(r, 450));
+    }
+    var rows = document.querySelectorAll("li.education, li.experience");
+    var eduRow = null;
+    for (var row of rows) {
+      if (row.querySelector('input[placeholder="School"], input[placeholder="University"], input[placeholder="Institution"]')) {
+        eduRow = row;
+        break;
+      }
+    }
+    if (!eduRow) return;
+    var schoolInput = eduRow.querySelector('input[placeholder="School"], input[placeholder="University"], input[placeholder="Institution"]');
+    var fieldOfStudy = eduRow.querySelector('input[placeholder="Field of Study"], input[placeholder="Major"], input[placeholder="Degree"]');
+    var summaryEl = eduRow.querySelector('textarea[placeholder="Summary"], textarea[placeholder="Description"]');
+    var dateInputs = eduRow.querySelectorAll('input[type="date"]');
+    if (schoolInput && profile.education_school && !schoolInput.value) {
+      this._setText(schoolInput, profile.education_school);
+    }
+    var major = profile.education_major || profile.education_degree;
+    if (fieldOfStudy && major && !fieldOfStudy.value) {
+      this._setText(fieldOfStudy, major);
+    }
+    if (summaryEl && profile.education_degree && !summaryEl.value) {
+      this._setText(summaryEl, profile.education_degree);
+    }
+    if (dateInputs[1] && profile.education_end_year && !dateInputs[1].value) {
+      var em = String(this._monthNum(profile.education_end_month) || "06").padStart(2, "0");
+      this._setText(dateInputs[1], `${profile.education_end_year}-${em}-01`);
+    }
+    if (dateInputs[0] && profile.education_start_year && !dateInputs[0].value) {
+      this._setText(dateInputs[0], `${profile.education_start_year}-09-01`);
+    }
   },
 
   async _fillAngularSelects(profile) {
