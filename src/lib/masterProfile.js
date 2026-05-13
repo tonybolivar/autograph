@@ -1,8 +1,12 @@
 const AG_PROFILE_SECTIONS = [
   { id: "about", label: "About You" },
+  { id: "experience", label: "Work Experience" },
+  { id: "education", label: "Education" },
   { id: "employment", label: "Employment Questions" },
   { id: "demographic", label: "Demographic Questions" }
 ];
+
+const AG_MONTH_OPTIONS = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 const AG_LINKEDIN_RE = /\blinkedin\.com\/(?:in|pub|profile)\/[^\s/?#]+/i;
 
@@ -18,6 +22,17 @@ const AG_PROFILE_FIELDS = [
   { id: "zip_postal", label: "Zip / Postal", type: "text", section: "about" },
   { id: "country", label: "Country", type: "text", section: "about" },
   { id: "linkedin_profile", label: "LinkedIn Profile", type: "url", section: "about", validate: v => AG_LINKEDIN_RE.test(v) },
+  { id: "website", label: "Personal Website / Portfolio", type: "url", section: "about" },
+  { id: "github_profile", label: "GitHub Profile", type: "url", section: "about" },
+  { id: "twitter_profile", label: "Twitter / X Profile", type: "url", section: "about" },
+  { id: "current_company", label: "Current Company", type: "text", section: "experience" },
+  { id: "current_title", label: "Current Title", type: "text", section: "experience" },
+  { id: "years_experience", label: "Total Years of Experience", type: "text", section: "experience" },
+  { id: "education_school", label: "School", type: "text", section: "education" },
+  { id: "education_degree", label: "Degree", type: "text", section: "education" },
+  { id: "education_major", label: "Major / Field of Study", type: "text", section: "education" },
+  { id: "education_end_month", label: "End Date Month", type: "select", section: "education", options: AG_MONTH_OPTIONS },
+  { id: "education_end_year", label: "End Date Year", type: "text", section: "education" },
   { id: "work_authorization", label: "Authorized to work?", type: "select", section: "employment", options: ["", "Yes", "No"] },
   { id: "need_sponsorship", label: "Need sponsorship?", type: "select", section: "employment", options: ["", "Yes", "No"] },
   { id: "willing_to_relocate", label: "Willing to relocate?", type: "select", section: "employment", options: ["", "Yes", "No"] },

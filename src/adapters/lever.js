@@ -46,9 +46,10 @@ const AG_ADAPTER_LEVER = {
       const combined = `${f} ${l}`.trim();
       return combined || undefined;
     }
-    if (fieldId === "url_linkedin" && profile.linkedin_profile) {
-      return profile.linkedin_profile;
-    }
+    if (fieldId === "url_linkedin" && profile.linkedin_profile) return profile.linkedin_profile;
+    if ((fieldId === "url_github" || fieldId === "url_githuburl") && profile.github_profile) return profile.github_profile;
+    if ((fieldId === "url_portfolio" || fieldId === "url_website" || fieldId === "url_other") && profile.website) return profile.website;
+    if ((fieldId === "url_twitter" || fieldId === "url_x") && profile.twitter_profile) return profile.twitter_profile;
     return undefined;
   }
 };

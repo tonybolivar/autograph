@@ -156,11 +156,90 @@ async function renderCaptured() {
   }
 }
 
+async function renderResume() {
+  const status = $("#resumeStatus");
+  const meta = await agLoadResumeMeta();
+  if (!meta) {
+    status.innerHTML = `<p class="panel-help">No resume uploaded yet.</p>`;
+    $("#resumeClearBtn").disabled = true;
+    return;
+  }
+  const kb = Math.round(meta.size / 1024);
+  const date = new Date(meta.uploadedAt).toLocaleDateString();
+  status.innerHTML = `
+    <div class="resume-card">
+      <div class="resume-filename">${meta.filename}</div>
+      <div class="resume-meta">${kb} KB . ${meta.type || "file"} . uploaded ${date}</div>
+    </div>
+  `;
+  $("#resumeClearBtn").disabled = false;
+}
+
+async function renderDomains() {
+  const builtinList = $("#builtinDomainList");
+  builtinList.innerHTML = "";
+  for (const [host, adapter] of Object.entries(AG_KNOWN_CUSTOM_DOMAINS)) {
+    const row = document.createElement("div");
+    row.className = "domain-row";
+    row.innerHTML = `<span class="domain-host">${host}</span><span class="domain-adapter">${adapter}</span>`;
+    builtinList.appendChild(row);
+  }
+
+  const userList = $("#userDomainList");
+  userList.innerHTML = "";
+  const stored = await agLoadCustomDomains();
+  const entries = Object.entries(stored);
+  if (entries.length === 0) {
+    userList.innerHTML = `<p class="panel-help">No custom domains added yet.</p>`;
+    return;
+  }
+  for (const [host, adapter] of entries) {
+    const row = document.createElement("div");
+    row.className = "domain-row";
+    row.innerHTML = `<span class="domain-host">${host}</span><span class="domain-adapter">${adapter}</span>`;
+    const rm = document.createElement("button");
+    rm.className = "btn btn-warn";
+    rm.textContent = "Remove";
+    rm.addEventListener("click", async () => {
+      await agRemoveCustomDomain(host);
+      try { await chrome.permissions.remove({ origins: [`*://${host}/*`] }); } catch (e) {}
+      renderDomains();
+    });
+    row.appendChild(rm);
+    userList.appendChild(row);
+  }
+}
+
+$("#addDomainForm")?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const host = $("#domainHost").value.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "");
+  if (!host || !host.includes(".")) {
+    alert("Enter a hostname like careers.example.com");
+    return;
+  }
+  const adapter = $("#domainAdapter").value;
+  try {
+    const granted = await chrome.permissions.request({ origins: [`*://${host}/*`] });
+    if (!granted) {
+      alert("Permission was not granted. Autograph cannot read this domain without it.");
+      return;
+    }
+  } catch (err) {
+    alert("Could not request permission: " + err.message);
+    return;
+  }
+  await agAddCustomDomain(host, adapter);
+  $("#domainHost").value = "";
+  renderDomains();
+});
+
 function switchTab(name) {
   $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
   $$(".panel").forEach(p => p.classList.toggle("active", p.id === `tab-${name}`));
   if (name === "sites") renderSites();
   if (name === "data") renderCaptured();
+  if (name === "resume") renderResume();
+  if (name === "domains") renderDomains();
 }
 
 $$(".tab").forEach(t => t.addEventListener("click", () => switchTab(t.dataset.tab)));
@@ -200,6 +279,26 @@ $("#resetProfileBtn").addEventListener("click", async () => {
   if (!confirm("Reset your entire master profile? This cannot be undone.")) return;
   await chrome.storage.sync.set({ masterProfile: {} });
   renderProfile();
+});
+
+$("#resumeUploadBtn").addEventListener("click", () => $("#resumeFileInput").click());
+$("#resumeFileInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const MAX = 4 * 1024 * 1024;
+  if (file.size > MAX) {
+    alert("File is over 4 MB. Most resumes are well under 1 MB. Please trim or compress your PDF.");
+    return;
+  }
+  await agSaveResume(file);
+  e.target.value = "";
+  renderResume();
+});
+
+$("#resumeClearBtn").addEventListener("click", async () => {
+  if (!confirm("Remove the stored resume?")) return;
+  await agClearResume();
+  renderResume();
 });
 
 renderProfile();

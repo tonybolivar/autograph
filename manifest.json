@@ -55,8 +55,10 @@
     "*://job-boards.greenhouse.io/*",
     "*://boards.greenhouse.io/*",
     "*://*.bamboohr.com/*",
-    "*://jobs.gem.com/*"
+    "*://jobs.gem.com/*",
+    "*://careers.formlabs.com/*"
   ],
+  "optional_host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
       "matches": [
@@ -82,7 +84,8 @@
         "*://*.teamtailor.com/*",
         "*://recruiting.ultipro.com/*",
         "*://*.bamboohr.com/*",
-        "*://jobs.gem.com/*"
+        "*://jobs.gem.com/*",
+        "*://careers.formlabs.com/*"
       ],
       "css": ["src/styles/content.css"],
       "js": [
@@ -92,6 +95,8 @@
         "src/lib/labelMatcher.js",
         "src/lib/domUtils.js",
         "src/lib/capture.js",
+        "src/lib/resume.js",
+        "src/lib/customDomains.js",
         "src/adapters/_default.js",
         "src/adapters/workday.js",
         "src/adapters/smartrecruiters.js",
@@ -127,6 +132,8 @@
         "src/lib/labelMatcher.js",
         "src/lib/domUtils.js",
         "src/lib/capture.js",
+        "src/lib/resume.js",
+        "src/lib/customDomains.js",
         "src/adapters/_default.js",
         "src/adapters/icims.js",
         "src/content/content.js"
@@ -147,6 +154,8 @@
         "src/lib/labelMatcher.js",
         "src/lib/domUtils.js",
         "src/lib/capture.js",
+        "src/lib/resume.js",
+        "src/lib/customDomains.js",
         "src/adapters/_default.js",
         "src/adapters/greenhouse.js",
         "src/content/content.js"

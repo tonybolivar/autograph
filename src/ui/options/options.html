@@ -22,9 +22,13 @@
 
   <nav class="tabs">
     <button class="tab active" data-tab="about">About You</button>
+    <button class="tab" data-tab="experience">Experience</button>
+    <button class="tab" data-tab="education">Education</button>
     <button class="tab" data-tab="employment">Employment</button>
     <button class="tab" data-tab="demographic">Demographics</button>
+    <button class="tab" data-tab="resume">Resume</button>
     <button class="tab" data-tab="sites">Sites</button>
+    <button class="tab" data-tab="domains">Custom Domains</button>
     <button class="tab" data-tab="data">Data</button>
   </nav>
 
@@ -33,6 +37,18 @@
       <h2>About You</h2>
       <p class="panel-help">The basics every application asks for. Synced across your Chrome profile.</p>
       <div class="grid" id="grid-about"></div>
+    </section>
+
+    <section id="tab-experience" class="panel">
+      <h2>Work Experience</h2>
+      <p class="panel-help">Your current role plus total years of experience. Many ATSes ask just these three. Full work history with multiple jobs is on the roadmap.</p>
+      <div class="grid" id="grid-experience"></div>
+    </section>
+
+    <section id="tab-education" class="panel">
+      <h2>Education</h2>
+      <p class="panel-help">Your most recent or highest-level education. Fills the typical school / degree / major / graduation date fields on applications.</p>
+      <div class="grid" id="grid-education"></div>
     </section>
 
     <section id="tab-employment" class="panel">
@@ -47,10 +63,44 @@
       <div class="grid" id="grid-demographic"></div>
     </section>
 
+    <section id="tab-resume" class="panel">
+      <h2>Resume</h2>
+      <p class="panel-help">Upload a PDF (or DOC / DOCX) and Autograph will attach it to the resume file input on supported job applications automatically. Stored locally on this device, never uploaded anywhere else.</p>
+      <div id="resumeStatus"></div>
+      <div class="row-actions">
+        <button id="resumeUploadBtn" class="btn">Upload resume</button>
+        <input type="file" id="resumeFileInput" accept=".pdf,.doc,.docx,.txt,.rtf" style="display:none">
+        <button id="resumeClearBtn" class="btn btn-warn">Remove resume</button>
+      </div>
+    </section>
+
     <section id="tab-sites" class="panel">
       <h2>Supported Sites</h2>
       <p class="panel-help">Toggle Autograph off per platform if you want.</p>
       <div class="site-list" id="siteList"></div>
+    </section>
+
+    <section id="tab-domains" class="panel">
+      <h2>Custom Domains</h2>
+      <p class="panel-help">Some companies wrap a known ATS at their own URL (Formlabs wraps Greenhouse at careers.formlabs.com, for example). Add the domain plus which ATS it really uses, grant Chrome permission when prompted, and Autograph will fill applications on that site too.</p>
+      <form id="addDomainForm" class="domain-form">
+        <input type="text" id="domainHost" placeholder="careers.example.com" required>
+        <select id="domainAdapter">
+          <option value="greenhouse">Greenhouse</option>
+          <option value="lever">Lever</option>
+          <option value="ashby">Ashby</option>
+          <option value="workday">Workday</option>
+          <option value="smartrecruiters">SmartRecruiters</option>
+          <option value="bamboohr">BambooHR</option>
+          <option value="recruitee">Recruitee</option>
+          <option value="teamtailor">TeamTailor</option>
+        </select>
+        <button type="submit" class="btn">Add domain</button>
+      </form>
+      <h3>Built in</h3>
+      <div id="builtinDomainList"></div>
+      <h3>Your additions</h3>
+      <div id="userDomainList"></div>
     </section>
 
     <section id="tab-data" class="panel">
@@ -76,6 +126,8 @@
   <script src="../../lib/normalizers.js"></script>
   <script src="../../lib/sites.js"></script>
   <script src="../../lib/masterProfile.js"></script>
+  <script src="../../lib/resume.js"></script>
+  <script src="../../lib/customDomains.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

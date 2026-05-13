@@ -292,6 +292,10 @@
       }
 
       agSaveFieldLabels(currentSiteId, labelMap);
+
+      const resumeFilled = await fillResumeInputs();
+      filled += resumeFilled;
+
       return { detected, filled };
     } finally {
       runInProgress = false;
@@ -305,6 +309,37 @@
         }, 80);
       }
     }
+  }
+
+  const resumeFilledInputs = new WeakSet();
+  let cachedResumeFile = undefined;
+
+  async function fillResumeInputs() {
+    if (typeof agSynthesizeResumeFile !== "function") return 0;
+    const fileInputs = Array.from(document.querySelectorAll('input[type="file"]'));
+    if (fileInputs.length === 0) return 0;
+    const candidates = fileInputs.filter(el =>
+      !resumeFilledInputs.has(el) &&
+      el.files.length === 0 &&
+      agIsResumeFileInput(el)
+    );
+    if (candidates.length === 0) return 0;
+    if (cachedResumeFile === undefined) {
+      cachedResumeFile = await agSynthesizeResumeFile();
+    }
+    if (!cachedResumeFile) return 0;
+    let count = 0;
+    for (const el of candidates) {
+      const ok = agFillFileInput(el, cachedResumeFile);
+      if (ok) {
+        resumeFilledInputs.add(el);
+        const fid = getFieldId(el) || "resume_file";
+        highlight(el, fid);
+        count++;
+        await new Promise(r => setTimeout(r, 50));
+      }
+    }
+    return count;
   }
 
   function attachCapture(el, fieldId, labelKey) {
@@ -575,10 +610,24 @@
 
   (async () => {
     const host = window.location.hostname;
-    const site = agFindSiteForHost(host);
-    if (!site) return;
     const toggles = (await chrome.storage.local.get("siteToggles")).siteToggles || {};
-    if (toggles[site.id] === false) return;
-    activate(site);
+
+    const site = agFindSiteForHost(host);
+    if (site) {
+      if (toggles[site.id] === false) return;
+      activate(site);
+      return;
+    }
+
+    if (typeof agFindCustomDomainForHostname === "function") {
+      const storedCustom = (await chrome.storage.sync.get("customDomains")).customDomains || {};
+      const custom = agFindCustomDomainForHostname(host, storedCustom);
+      if (custom) {
+        if (toggles[custom.host] === false) return;
+        const detected = (typeof agDetectEmbeddedATS === "function") ? agDetectEmbeddedATS() : null;
+        const adapterId = detected || custom.adapter;
+        activate({ id: custom.host, name: custom.host, adapter: adapterId, isCustomDomain: true });
+      }
+    }
   })();
 })();
