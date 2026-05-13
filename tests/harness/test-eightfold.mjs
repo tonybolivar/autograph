@@ -44,7 +44,7 @@ async function main() {
   const page = await ctx.newPage();
   page.on('pageerror', e => console.log('[err]', e.message.slice(0, 200)));
   await page.goto(URL_, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(8000);
+  await page.waitForTimeout(15000);
 
   const probe = await page.evaluate(() => {
     const cbs = Array.from(document.querySelectorAll('input[type="checkbox"]'));
@@ -67,16 +67,136 @@ async function main() {
   const emailProbe = await page.evaluate(() => {
     const el = document.getElementById('Contact_Information_email');
     if (!el) return { found: false };
+    const rect = el.getBoundingClientRect();
+    let parent = el.parentElement;
+    const ancestors = [];
+    while (parent && ancestors.length < 8) {
+      const cs = getComputedStyle(parent);
+      ancestors.push({
+        tag: parent.tagName,
+        cls: (parent.className || '').slice(0, 60),
+        position: cs.position,
+        top: cs.top,
+        transform: cs.transform,
+        visibility: cs.visibility,
+        display: cs.display,
+        height: cs.height
+      });
+      parent = parent.parentElement;
+    }
     return {
       found: true,
-      value: el.value,
-      agFilled: el.getAttribute('data-ag-filled'),
-      type: el.type,
-      visible: el.offsetParent !== null,
-      rect: el.getBoundingClientRect()
+      rect: { top: rect.top, left: rect.left, w: rect.width, h: rect.height },
+      offsetParent: !!el.offsetParent,
+      offsetTop: el.offsetTop,
+      style: el.getAttribute('style'),
+      ancestors
     };
   });
-  console.log('EMAIL PROBE:', JSON.stringify(emailProbe));
+  console.log('EMAIL_PROBE:', JSON.stringify(emailProbe).slice(0, 1500));
+
+  const eFill = await page.evaluate(() => {
+    const e = document.getElementById('Contact_Information_email');
+    const c = document.getElementById('Contact_Information_city');
+    return {
+      email: e ? { value: e.value, ag: e.getAttribute('data-ag-filled'), type: e.type, display: getComputedStyle(e).display } : null,
+      city: c ? { value: c.value, ag: c.getAttribute('data-ag-filled'), type: c.type, display: getComputedStyle(c).display } : null
+    };
+  });
+  console.log('EFILL:', JSON.stringify(eFill));
+
+  const trace = await page.evaluate(() => {
+    const e = document.getElementById('Contact_Information_email');
+    if (!e) return null;
+    // The content script is isolated world - can't access agExtractLabel directly.
+    // Check structural cues for adapter logic.
+    const label = document.querySelector(`label[for="${CSS.escape(e.id)}"]`);
+    const wrap = e.closest('.form-group, .ef-form-field, [class*=FormField], fieldset');
+    const wrapLabel = wrap?.querySelector('label, legend, [class*=label]');
+    // Inside dialog/modal?
+    const dialog = e.closest('.ant-modal, [role=dialog], [role=alertdialog], [class*=Modal], [class*=Dialog], [class*=Drawer]');
+    // Check if has resume parser cls
+    return {
+      labelFor: label?.textContent?.trim().slice(0, 40),
+      wrapClass: (wrap?.className || '').slice(0, 80),
+      wrapLabelText: wrapLabel?.textContent?.trim().slice(0, 40),
+      inDialog: !!dialog,
+      hasFormParent: !!e.closest('form, fieldset')
+    };
+  });
+  console.log('TRACE:', JSON.stringify(trace));
+
+  const shadowCheck = await page.evaluate(() => {
+    const e = document.getElementById('Contact_Information_email');
+    if (!e) return null;
+    let host = e.parentNode;
+    while (host) {
+      if (host.host) return { inShadow: true, hostTag: host.host.tagName };
+      host = host.parentNode;
+    }
+    const reachable = document.querySelectorAll('input').length;
+    const reachableByQS = Array.from(document.querySelectorAll('input')).includes(e);
+    return { inShadow: false, reachableInputCount: reachable, foundByQS: reachableByQS };
+  });
+  console.log('SHADOW:', JSON.stringify(shadowCheck));
+
+  const exclusionCheck = await page.evaluate(() => {
+    const e = document.getElementById('Contact_Information_email');
+    if (!e) return null;
+    return {
+      closestDialog: e.closest("[role='dialog']")?.tagName,
+      closestModal: e.closest("[class*='Modal']")?.className?.slice(0, 80),
+      closestDrawer: e.closest("[class*='Drawer']")?.className?.slice(0, 80),
+      closestAntModal: e.closest(".ant-modal")?.className?.slice(0, 80)
+    };
+  });
+  console.log('EXCLUSION:', JSON.stringify(exclusionCheck));
+
+  const dupCheck = await page.evaluate(() => {
+    const all = Array.from(document.querySelectorAll('input'));
+    const emailLikes = all.filter(e => /email/i.test(e.id || e.name || ''));
+    return emailLikes.map(e => ({
+      id: e.id,
+      name: e.name,
+      value: e.value,
+      ag: e.getAttribute('data-ag-filled'),
+      visible: e.offsetParent !== null,
+      sameId: document.querySelectorAll(`#${CSS.escape(e.id)}`).length
+    }));
+  });
+  console.log('DUPCHECK:', JSON.stringify(dupCheck));
+
+
+  const directFill = await page.evaluate(async () => {
+    const e = document.getElementById('Contact_Information_email');
+    if (!e) return null;
+    e.focus();
+    const proto = window.HTMLInputElement.prototype;
+    const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
+    setter.call(e, 'tony.e.bolivar@gmail.com');
+    e.dispatchEvent(new Event('input', { bubbles: true }));
+    e.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 200));
+    const v1 = e.value;
+    await new Promise(r => setTimeout(r, 1000));
+    const v2 = e.value;
+    return { afterSet: v1, after1s: v2 };
+  });
+  console.log('DIRECT_FILL:', JSON.stringify(directFill));
+
+  const allEmail = await page.evaluate(() => {
+    const els = Array.from(document.querySelectorAll('input[type="text"], input[type="email"]')).filter(e => /email/i.test(e.id || e.name || '') || /email/i.test(document.querySelector(`label[for="${CSS.escape(e.id || 'none')}"]`)?.textContent || ''));
+    return els.map(el => ({
+      id: el.id,
+      name: el.name,
+      type: el.type,
+      value: el.value,
+      ag: el.getAttribute('data-ag-filled'),
+      rect: el.getBoundingClientRect(),
+      label: document.querySelector(`label[for="${CSS.escape(el.id || 'none')}"]`)?.textContent?.trim()?.slice(0, 40)
+    }));
+  });
+  console.log('ALL_EMAIL:', JSON.stringify(allEmail));
 
   const r = await page.evaluate(() => {
     const fields = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea, [role="combobox"]'));

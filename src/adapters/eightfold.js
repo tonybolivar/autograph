@@ -45,11 +45,9 @@ var AG_ADAPTER_EIGHTFOLD = {
   },
 
   getFieldId(el) {
-    if (el.name) return el.name;
-    if (el.id && !/^:r/.test(el.id)) return el.id;
-    const testid = el.getAttribute("data-test-id") || el.getAttribute("data-testid");
-    if (testid) return testid;
-    return null;
+    var raw = el.name || (el.id && !/^:r/.test(el.id) ? el.id : null) || el.getAttribute("data-test-id") || el.getAttribute("data-testid");
+    if (!raw) return null;
+    return raw.replace(/^Contact_Information_/, "");
   },
 
   getFieldLabel(el) {
