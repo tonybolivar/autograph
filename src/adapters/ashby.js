@@ -114,6 +114,12 @@ var AG_ADAPTER_ASHBY = {
     return false;
   },
 
+  shouldFillResumeInput(el) {
+    if (el.closest("[class*='autofill-uploader'], [class*='autofill-input']")) return false;
+    if (el.id === "_systemfield_resume") return true;
+    return undefined;
+  },
+
   async prefillPass({ profile }) {
     const yesnoContainers = Array.from(document.querySelectorAll("._yesno_17tft_149, [class*='_yesno_']"));
     for (const container of yesnoContainers) {
