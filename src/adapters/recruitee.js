@@ -52,12 +52,16 @@ var AG_ADAPTER_RECRUITEE = {
     }
     if (!labelEl) labelEl = el.parentElement && el.parentElement.querySelector("label");
     var clickTarget = labelEl || el;
-    if (target) {
+    var dispatchPress = function (node) {
       try {
-        clickTarget.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
-        clickTarget.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
-        clickTarget.click();
+        node.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
+        node.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
+        node.click();
       } catch (e) {}
+    };
+    if (target) {
+      dispatchPress(clickTarget);
+      if (el.checked !== target) dispatchPress(el);
     }
     if (el.checked !== target) {
       var proto = window.HTMLInputElement.prototype;
@@ -66,7 +70,22 @@ var AG_ADAPTER_RECRUITEE = {
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     }
-    return el.checked === target;
+    var initiallyChecked = el.checked === target;
+    if (target) {
+      setTimeout(function () {
+        if (el.isConnected && el.checked !== target) {
+          dispatchPress(clickTarget);
+          if (el.checked !== target) dispatchPress(el);
+        }
+      }, 250);
+      setTimeout(function () {
+        if (el.isConnected && el.checked !== target) {
+          dispatchPress(clickTarget);
+          if (el.checked !== target) dispatchPress(el);
+        }
+      }, 800);
+    }
+    return initiallyChecked;
   },
 
   getCheckboxChecked(el) {
