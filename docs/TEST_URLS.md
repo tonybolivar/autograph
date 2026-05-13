@@ -45,5 +45,6 @@ Some ATSes gate their application form behind an account or sign-in step, so the
 - **Oracle HCM** (oraclecloud.com): account creation required for most tenants.
 - **SuccessFactors** (successfactors.com): account creation required.
 - **Some Bullhorn / Jobvite tenants**: vary by deployment.
+- **SmartRecruiters** (smartrecruiters.com): some tenants redirect the apply button to `smartr.me` (their separate apply hosting). Coverage on smartr.me requires extending manifest host_permissions and content_scripts. Inline-form tenants (where `/job/<id>` shows fields directly) are covered.
 
 When testing one of these, document in `tests/adapters/<name>.test.md` what DID and DIDN'T fill correctly. The adapter source is the place to add tenant-specific tweaks.

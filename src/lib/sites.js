@@ -5,6 +5,7 @@ var AG_SUPPORTED_SITES = [
   { id: "lever", name: "Lever", hostMatch: "jobs.lever.co", adapter: "lever" },
   { id: "ashby", name: "Ashby", hostMatch: "jobs.ashbyhq.com", adapter: "ashby" },
   { id: "smartrecruiters", name: "SmartRecruiters", hostMatch: ".smartrecruiters.com", adapter: "smartrecruiters" },
+  { id: "smartr_me", name: "SmartRecruiters (smartr.me)", hostMatch: "smartr.me", adapter: "smartrecruiters" },
   { id: "oracle", name: "Oracle HCM", hostMatch: ".oraclecloud.com", adapter: "oracle" },
   { id: "icims", name: "iCIMS", hostMatch: ".icims.com", adapter: "icims" },
   { id: "successfactors", name: "SuccessFactors", hostMatch: ".successfactors.", adapter: "successfactors" },

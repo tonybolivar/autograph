@@ -32,6 +32,7 @@
   "host_permissions": [
     "*://*.myworkdayjobs.com/*",
     "*://*.smartrecruiters.com/*",
+    "*://*.smartr.me/*",
     "*://*.eightfold.ai/*",
     "*://*.oraclecloud.com/*",
     "*://*.icims.com/*",
@@ -64,6 +65,7 @@
       "matches": [
         "*://*.myworkdayjobs.com/*",
         "*://*.smartrecruiters.com/*",
+        "*://*.smartr.me/*",
         "*://*.eightfold.ai/*",
         "*://*.oraclecloud.com/*",
         "*://jobs.ashbyhq.com/*",
