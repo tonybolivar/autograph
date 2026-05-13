@@ -227,7 +227,11 @@
         );
         const dataSource = useInstance ? instanceData : siteData;
         const labelKey = elementInstanceKey(fieldId);
-        const label = getFieldLabel(el);
+        let label = getFieldLabel(el);
+        if (isCheckRadio(el)) {
+          const groupLabel = agExtractGroupLabel(el);
+          if (groupLabel) label = groupLabel;
+        }
         labelMap[fieldId] = label;
         detected++;
 

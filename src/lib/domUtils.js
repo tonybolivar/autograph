@@ -54,8 +54,10 @@ function agExtractLabel(el) {
   if (el.type === "radio" || el.type === "checkbox") {
     const fs = el.closest("fieldset");
     if (fs) {
-      const lg = fs.querySelector("legend");
+      const lg = fs.querySelector(":scope > legend, :scope > label, :scope > [class*='label']");
       if (lg && lg.textContent.trim()) return agCleanLabel(lg.textContent);
+      const anyLg = fs.querySelector("legend");
+      if (anyLg && anyLg.textContent.trim()) return agCleanLabel(anyLg.textContent);
     }
     const rg = el.closest("[role='radiogroup']");
     if (rg) {
@@ -118,6 +120,39 @@ function agExtractLabel(el) {
   return "";
 }
 
+function agExtractGroupLabel(el) {
+  if (el.type !== "radio" && el.type !== "checkbox") return null;
+  const fs = el.closest("fieldset");
+  if (fs) {
+    const lg = fs.querySelector(":scope > legend, :scope > label, :scope > [class*='label']");
+    if (lg && lg.textContent.trim()) return agCleanLabel(lg.textContent);
+    const anyLg = fs.querySelector("legend");
+    if (anyLg && anyLg.textContent.trim()) return agCleanLabel(anyLg.textContent);
+  }
+  const rg = el.closest("[role='radiogroup'], [role='group']");
+  if (rg) {
+    const rb = rg.getAttribute("aria-labelledby");
+    if (rb) {
+      const ref = document.getElementById(rb);
+      if (ref && ref.textContent.trim()) return agCleanLabel(ref.textContent);
+    }
+    const lbl = rg.getAttribute("aria-label");
+    if (lbl) return agCleanLabel(lbl);
+  }
+  let ancestor = el.parentElement;
+  let depth = 0;
+  while (ancestor && depth < 6) {
+    const hasMultipleRadios = ancestor.querySelectorAll(`input[type="radio"][name="${el.name ? CSS.escape(el.name) : ''}"]`).length > 1;
+    if (hasMultipleRadios) {
+      const lg = ancestor.querySelector(":scope > legend, :scope > label, :scope > [class*='label'], :scope > [class*='heading']");
+      if (lg && lg.textContent.trim()) return agCleanLabel(lg.textContent);
+    }
+    ancestor = ancestor.parentElement;
+    depth++;
+  }
+  return null;
+}
+
 function agExtractFieldId(el) {
   if (el.name && (el.type === "radio" || !agIsGenericIdToken(el.name))) return el.name;
   if (el.id && !agIsGenericIdToken(el.id)) return el.id;
@@ -173,6 +208,9 @@ function agSetCheckedSafe(el, target) {
   el.dispatchEvent(new Event("focusin", { bubbles: true }));
   const proto = window.HTMLInputElement.prototype;
   const setter = Object.getOwnPropertyDescriptor(proto, "checked")?.set;
+  if (el._valueTracker) {
+    try { el._valueTracker.setValue(target ? "" : "true"); } catch (e) {}
+  }
 
   if (el.type === "radio" && target && el.name) {
     const peers = document.querySelectorAll(`input[type="radio"][name="${CSS.escape(el.name)}"]`);
