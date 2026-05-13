@@ -275,6 +275,9 @@
             if (agIsSelectField(el) || isDropdown(el)) {
               const denorm = AG_VALUE_DENORMALIZERS[profileFieldId];
               value = denorm ? denorm(raw) : [raw];
+              if (Array.isArray(value) && agIsDemographicField(label, fieldId)) {
+                value = value.concat(AG_DECLINE_OPTION_LABELS);
+              }
             } else if (el.type === "radio" || el.type === "checkbox") {
               const denorm = AG_VALUE_DENORMALIZERS[profileFieldId];
               value = denorm ? denorm(raw) : [raw];
