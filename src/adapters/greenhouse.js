@@ -10,7 +10,21 @@ const AG_ADAPTER_GREENHOUSE = {
     if (el.name === "g-recaptcha-response") return true;
     if (el.classList && el.classList.contains("iti__search-input")) return true;
     if (el.id && /^iti-\d+__search-input$/.test(el.id)) return true;
+    if (el.closest && el.closest(".iti, [class*='iti__'], [class*='iti--'], .phone-input__country")) return true;
     return false;
+  },
+
+  shouldFillResumeInput() {
+    return false;
+  },
+
+  async waitForReady() {
+    await new Promise(r => setTimeout(r, 800));
+    const start = Date.now();
+    while (Date.now() - start < 5000) {
+      if (document.querySelector('input#first_name, input#email, input[id^="question_"]')) return;
+      await new Promise(r => setTimeout(r, 200));
+    }
   },
 
   getFieldId(el) {

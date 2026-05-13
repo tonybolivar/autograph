@@ -341,7 +341,8 @@
     const candidates = fileInputs.filter(el =>
       !resumeFilledInputs.has(el) &&
       el.files.length === 0 &&
-      agIsResumeFileInput(el)
+      agIsResumeFileInput(el) &&
+      (!adapter.shouldFillResumeInput || adapter.shouldFillResumeInput(el))
     );
     if (candidates.length === 0) return 0;
     if (cachedResumeFile === undefined) {
