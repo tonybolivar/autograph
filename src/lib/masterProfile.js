@@ -29,6 +29,8 @@ var AG_PROFILE_FIELDS = [
   { id: "current_company", label: "Current Company", type: "text", section: "experience" },
   { id: "current_title", label: "Current Title", type: "text", section: "experience" },
   { id: "years_experience", label: "Total Years of Experience", type: "text", section: "experience" },
+  { id: "desired_salary", label: "Desired Salary", type: "text", section: "experience" },
+  { id: "salary_currency", label: "Salary Currency", type: "text", section: "experience" },
   { id: "education_school", label: "School", type: "text", section: "education" },
   { id: "education_degree", label: "Degree", type: "text", section: "education" },
   { id: "education_major", label: "Major / Field of Study", type: "text", section: "education" },
