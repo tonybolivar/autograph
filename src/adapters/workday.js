@@ -49,18 +49,32 @@ var AG_ADAPTER_WORKDAY = {
   },
 
   getFieldLabel(el) {
-    const labelledBy = el.getAttribute("aria-labelledby");
+    // Workday puts the visible label on the formField-* wrapper. Prefer it
+    // over aria-label, which often appends the placeholder (e.g. "State Select One").
+    var formFieldWrap = el.closest('[data-automation-id^="formField"]');
+    if (formFieldWrap) {
+      var lbl = formFieldWrap.querySelector("label");
+      if (lbl && lbl.textContent.trim()) return lbl.textContent.replace(/\*$/, "").trim();
+    }
+    var labelledBy = el.getAttribute("aria-labelledby");
     if (labelledBy) {
-      const refs = labelledBy.split(/\s+/).map(id => document.getElementById(id)).filter(Boolean);
-      const text = refs.map(r => r.textContent.trim()).join(" ").trim();
+      var refs = labelledBy.split(/\s+/).map(id => document.getElementById(id)).filter(Boolean);
+      var text = refs.map(r => r.textContent.trim()).join(" ").trim();
       if (text) return text.replace(/\*$/, "").trim();
     }
-    const ariaLabel = el.getAttribute("aria-label");
-    if (ariaLabel) return ariaLabel.replace(/\*$/, "").trim();
-    const wrap = el.closest("[data-automation-id]");
+    var ariaLabel = el.getAttribute("aria-label");
+    if (ariaLabel) {
+      var cleaned = ariaLabel
+        .replace(/\s*select one\s*$/i, "")
+        .replace(/\s*required\s*$/i, "")
+        .replace(/\*$/, "")
+        .trim();
+      if (cleaned) return cleaned;
+    }
+    var wrap = el.closest("[data-automation-id]");
     if (wrap) {
-      const lbl = wrap.querySelector("label");
-      if (lbl && lbl.textContent.trim()) return lbl.textContent.replace(/\*$/, "").trim();
+      var lbl2 = wrap.querySelector("label");
+      if (lbl2 && lbl2.textContent.trim()) return lbl2.textContent.replace(/\*$/, "").trim();
     }
     return null;
   },
@@ -87,7 +101,16 @@ var AG_ADAPTER_WORKDAY = {
   },
 
   getDropdownValue(el) {
-    const display = el.querySelector("[data-automation-id*='selectedItem'], .css-1cu7zr1");
+    // For multi-select containers, count the actual chip elements (data-automation-id
+    // exactly "selectedItem"). The container's textContent renders the placeholder
+    // ("0 items selected") even when empty, and querySelector with *=selectedItem
+    // also matches the selectedItemList wrapper, so neither is a reliable signal.
+    if (el.getAttribute && el.getAttribute("data-automation-id") === "multiSelectContainer") {
+      var chips = el.querySelectorAll('[data-automation-id="selectedItem"]');
+      if (chips.length === 0) return "";
+      return Array.from(chips).map(c => c.textContent.trim()).join(", ");
+    }
+    var display = el.querySelector("[data-automation-id*='selectedItem'], .css-1cu7zr1");
     if (display && display.textContent.trim()) return display.textContent.trim();
     return (el.textContent || "").trim();
   },
@@ -97,48 +120,40 @@ var AG_ADAPTER_WORKDAY = {
   async fillDropdown(el, fieldId, candidates) {
     if (!candidates || candidates.length === 0) return false;
     el.scrollIntoView({ block: "center", behavior: "instant" });
-    const isMulti = el.getAttribute && el.getAttribute("data-automation-id") === "multiSelectContainer";
-    el.click();
-    await new Promise(r => setTimeout(r, 250));
+    var isMulti = el.getAttribute && el.getAttribute("data-automation-id") === "multiSelectContainer";
     if (isMulti) {
-      const searchBox = el.querySelector('input[data-automation-id="searchBox"]') || el.querySelector('input[type="text"]');
-      for (const cand of candidates) {
-        if (!searchBox) break;
-        const query = String(cand).trim();
-        if (!query) continue;
-        searchBox.focus();
-        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-        setter.call(searchBox, query);
-        searchBox.dispatchEvent(new Event("input", { bubbles: true }));
-        await new Promise(r => setTimeout(r, 500));
-        const opts = Array.from(document.querySelectorAll('[data-automation-id="promptOption"]'));
-        const lower = query.toLowerCase();
-        const exact = opts.find(o => o.textContent.trim().toLowerCase() === lower);
-        const starts = opts.find(o => o.textContent.trim().toLowerCase().startsWith(lower));
-        const contains = opts.find(o => o.textContent.trim().toLowerCase().includes(lower));
-        const pick = exact || starts || contains;
-        if (pick) {
-          pick.click();
-          await new Promise(r => setTimeout(r, 150));
-          return true;
-        }
-      }
-      if (searchBox) {
-        const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
-        setter.call(searchBox, "");
-        searchBox.dispatchEvent(new Event("input", { bubbles: true }));
-      }
-      document.body.click();
+      // Workday multi-select listboxes (How Did You Hear About Us, etc.)
+      // verify event.isTrusted on the option click, so neither synthetic
+      // MouseEvents nor reactProps invocation register the selection. Leave
+      // the field for the user to pick manually rather than producing a
+      // stale data-ag-filled state. Filling here would also block the
+      // selectedItem chip check downstream from advancing the page.
       return false;
     }
-    let panel = document.querySelector("[data-automation-id='promptOption'], [role='listbox'][data-automation-id]");
-    if (!panel) {
-      const popup = document.querySelector("[role='dialog'][aria-expanded='true'], [role='listbox']");
-      if (popup) panel = popup;
-    }
+    // Workday button dropdowns ignore plain el.click() because the React
+    // handler listens on the mousedown / mouseup pair, not just click.
+    // Dispatching the full sequence opens the listbox so we can pick.
+    el.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
+    el.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
+    el.click();
+    await new Promise(r => setTimeout(r, 350));
+    // Workday's open dropdown listbox has no data-automation-id and sits next
+    // to a selectedItemList listbox that holds the current chip selections.
+    // Search for any listbox containing role=option children, ignoring the
+    // selectedItemList one.
+    var listboxes = Array.from(document.querySelectorAll("[role='listbox']")).filter(m =>
+      m.getAttribute("data-automation-id") !== "selectedItemList" &&
+      !m.closest("[data-automation-id='selectedItemList']")
+    );
+    var panel = listboxes.find(m => m.querySelector("[role='option'], [data-automation-id='promptOption']")) || null;
     let options = [];
     if (panel) {
-      options = Array.from(panel.querySelectorAll("[data-automation-id='promptOption'], [role='option']"));
+      options = Array.from(panel.querySelectorAll("[role='option'], [data-automation-id='promptOption']"));
+    }
+    if (options.length === 0) {
+      options = Array.from(document.querySelectorAll("[role='option']")).filter(o =>
+        !o.closest("[data-automation-id='selectedItemList']")
+      );
     }
     if (options.length === 0) {
       options = Array.from(document.querySelectorAll("[data-automation-id='promptOption']"));
@@ -154,6 +169,8 @@ var AG_ADAPTER_WORKDAY = {
         return t === lower || t.startsWith(lower);
       });
       if (m) {
+        m.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
+        m.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
         m.click();
         await new Promise(r => setTimeout(r, 150));
         return true;
