@@ -6,6 +6,13 @@ const AG_ADAPTER_GREENHOUSE = {
     return m ? m[1] : null;
   },
 
+  isExcluded(el) {
+    if (el.name === "g-recaptcha-response") return true;
+    if (el.classList && el.classList.contains("iti__search-input")) return true;
+    if (el.id && /^iti-\d+__search-input$/.test(el.id)) return true;
+    return false;
+  },
+
   getFieldId(el) {
     if (el.id && !/^react|^:r/.test(el.id)) return el.id;
     if (el.name) return el.name;

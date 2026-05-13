@@ -51,8 +51,6 @@ function agExtractLabel(el) {
   }
   const ariaLabel = el.getAttribute("aria-label");
   if (ariaLabel && ariaLabel.trim()) return agCleanLabel(ariaLabel);
-  const placeholder = el.getAttribute("placeholder");
-  if (placeholder && placeholder.trim()) return agCleanLabel(placeholder);
   if (el.type === "radio" || el.type === "checkbox") {
     const fs = el.closest("fieldset");
     if (fs) {
@@ -68,6 +66,21 @@ function agExtractLabel(el) {
       }
     }
   }
+  let cursor = el.previousElementSibling;
+  let hops = 0;
+  while (cursor && hops < 3) {
+    if (cursor.tagName === "LABEL" && cursor.textContent.trim()) {
+      return agCleanLabel(cursor.textContent);
+    }
+    if (cursor.querySelector && cursor.children.length <= 3) {
+      const inner = cursor.querySelector("label");
+      if (inner && inner.textContent.trim()) return agCleanLabel(inner.textContent);
+    }
+    cursor = cursor.previousElementSibling;
+    hops++;
+  }
+  const placeholder = el.getAttribute("placeholder");
+  if (placeholder && placeholder.trim()) return agCleanLabel(placeholder);
   return "";
 }
 

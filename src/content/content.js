@@ -152,7 +152,9 @@
           target = el.value === value;
         }
       } else {
-        target = Array.isArray(value) ? value.includes(el.value) : (value === true || value === "true" || value === el.value);
+        if (value === "Yes" || value === true || value === "true") target = true;
+        else if (value === "No" || value === false || value === "false") target = false;
+        else target = Array.isArray(value) ? value.includes(el.value) : (value === el.value);
       }
       const adapterHasCheckbox = adapter.isCheckbox && adapter.isCheckbox(el);
       const currentChecked = adapter.getCheckboxChecked ? adapter.getCheckboxChecked(el) : el.checked;

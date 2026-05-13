@@ -29,6 +29,12 @@ const AG_ADAPTER_LEVER = {
 
   getFieldLabel(el) {
     if (el.name === "name") return "Full name";
+    if (el.name === "email") return "Email";
+    if (el.name === "phone") return "Phone";
+    if (el.name === "org") return "Current Company";
+    if (el.name === "location") return "Location";
+    const urlMatch = el.name && el.name.match(/^urls\[(.+)\]$/);
+    if (urlMatch) return `${urlMatch[1]} URL`;
     const question = el.closest(".application-question, .application-field, .application-additional");
     if (question) {
       const labelEl = question.querySelector(".application-label, .text, label, .question");
@@ -50,6 +56,10 @@ const AG_ADAPTER_LEVER = {
     if ((fieldId === "url_github" || fieldId === "url_githuburl") && profile.github_profile) return profile.github_profile;
     if ((fieldId === "url_portfolio" || fieldId === "url_website" || fieldId === "url_other") && profile.website) return profile.website;
     if ((fieldId === "url_twitter" || fieldId === "url_x") && profile.twitter_profile) return profile.twitter_profile;
+    if (fieldId === "location" && (profile.city || profile.state_province)) {
+      const parts = [profile.city, profile.state_province, profile.country].filter(Boolean);
+      return parts.length ? parts.join(", ") : undefined;
+    }
     return undefined;
   }
 };

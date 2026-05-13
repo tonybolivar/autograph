@@ -31,7 +31,19 @@ The pattern: pick a public posting on each ATS that has at least the basic name 
 
 ## How to find a live posting
 
-1. Pick a tech company that uses the ATS (e.g. Plaid, Notion, Anthropic for Lever).
+1. Pick a tech company that uses the ATS (e.g. Spotify or Brex for Lever, Anthropic for Greenhouse, OpenAI for Ashby).
 2. Visit `<company>.<atsHost>` or their careers page; click any open role.
 3. Click Apply. The /apply URL is your test URL.
 4. Sanity-check that you can see name / email / phone fields before opening Autograph against it.
+
+## Forms behind sign-in (manual testing only)
+
+Some ATSes gate their application form behind an account or sign-in step, so the Playwright runbook pattern (open URL, snapshot, assert) only goes as far as the gating page. For these we need a real user with an account to actually load the extension in regular Chrome, sign in, and verify the fill:
+
+- **Workday** (myworkdayjobs.com): every tenant requires account creation before the form is shown. The form structure across tenants is consistent (data-automation-id, work experience repeater, etc.) so the adapter is selectors-only; only live user testing can confirm.
+- **iCIMS** (icims.com): the apply flow is iframed and usually requires account creation.
+- **Oracle HCM** (oraclecloud.com): account creation required for most tenants.
+- **SuccessFactors** (successfactors.com): account creation required.
+- **Some Bullhorn / Jobvite tenants**: vary by deployment.
+
+When testing one of these, document in `tests/adapters/<name>.test.md` what DID and DIDN'T fill correctly. The adapter source is the place to add tenant-specific tweaks.

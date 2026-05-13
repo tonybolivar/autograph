@@ -13,8 +13,16 @@ const AG_ADAPTER_ASHBY = {
       if (sys) return sys[1].toLowerCase();
       if (testid.startsWith("input-")) return testid.slice(6);
     }
-    if (el.name) return el.name;
-    if (el.id && !/^:r/.test(el.id)) return el.id;
+    if (el.name) {
+      const sys = el.name.match(/^_(?:system|custom)field_(.+)$/);
+      if (sys) return sys[1].toLowerCase();
+      return el.name;
+    }
+    if (el.id) {
+      const sys = el.id.match(/^_(?:system|custom)field_(.+)$/);
+      if (sys) return sys[1].toLowerCase();
+      if (!/^:r/.test(el.id)) return el.id;
+    }
     return null;
   },
 
@@ -86,12 +94,17 @@ const AG_ADAPTER_ASHBY = {
     observer.observe(el, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-activedescendant"] });
   },
 
-  synthesizeValue(profile, fieldId) {
+  synthesizeValue(profile, fieldId, label) {
     const fid = (fieldId || "").toLowerCase();
+    const lab = (label || "").toLowerCase();
     if ((fid === "name" || fid === "fullname" || fid === "full_name") && (profile.first_name || profile.last_name)) {
       const f = (profile.first_name || "").trim();
       const l = (profile.last_name || "").trim();
       return `${f} ${l}`.trim() || undefined;
+    }
+    if (/where\s+are\s+you\s+currently\s+located|current\s+location/.test(lab)) {
+      const parts = [profile.city, profile.state_province, profile.country].filter(Boolean);
+      return parts.length ? parts.join(", ") : undefined;
     }
     return undefined;
   }
