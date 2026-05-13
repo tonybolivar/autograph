@@ -134,6 +134,52 @@ function agFireFieldEvents(el) {
   el.dispatchEvent(new Event("blur", { bubbles: true }));
 }
 
+function agSetCheckedSafe(el, target) {
+  el.focus();
+  el.dispatchEvent(new Event("focusin", { bubbles: true }));
+  const proto = window.HTMLInputElement.prototype;
+  const setter = Object.getOwnPropertyDescriptor(proto, "checked")?.set;
+
+  if (el.type === "radio" && target && el.name) {
+    const peers = document.querySelectorAll(`input[type="radio"][name="${CSS.escape(el.name)}"]`);
+    for (const peer of peers) {
+      if (peer === el || !peer.checked) continue;
+      if (setter) setter.call(peer, false);
+      else peer.checked = false;
+      peer.dispatchEvent(new Event("input", { bubbles: true }));
+      peer.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+
+  if (target && el.type === "radio") {
+    if (setter) setter.call(el, true);
+    else el.checked = true;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+    if (!el.checked) {
+      try { el.click(); } catch (e) {}
+    }
+  } else if (el.type === "checkbox") {
+    if (el.checked !== target) {
+      try { el.click(); } catch (e) {}
+    }
+    if (el.checked !== target) {
+      if (setter) setter.call(el, target);
+      else el.checked = target;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  } else {
+    if (setter) setter.call(el, target);
+    else el.checked = target;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+
+  el.dispatchEvent(new Event("blur", { bubbles: true }));
+  return el.checked === target;
+}
+
 function agNativeSetValue(el, value) {
   const tag = el.tagName.toLowerCase();
   if (tag !== "input" && tag !== "textarea") {

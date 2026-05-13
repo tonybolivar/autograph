@@ -176,11 +176,8 @@
       if (currentChecked === target) return false;
       if (adapterHasCheckbox && adapter.fillCheckbox) {
         adapter.fillCheckbox(el, target);
-      } else if (target) {
-        el.click();
       } else {
-        el.checked = false;
-        agFireFieldEvents(el);
+        agSetCheckedSafe(el, target);
       }
       return true;
     }
