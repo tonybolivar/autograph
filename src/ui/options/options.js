@@ -81,6 +81,8 @@ async function renderProfile() {
 async function refreshCompletion() {
   const { filled, total, percent } = await agGetProfileCompletion();
   $("#completionPercent").textContent = `${percent}%`;
+  const countEl = $("#completionCount");
+  if (countEl) countEl.textContent = `${filled} of ${total}`;
   $("#completionFill").style.width = `${percent}%`;
 }
 

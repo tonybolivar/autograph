@@ -50,3 +50,7 @@ chrome.tabs.onActivated.addListener(refresh);
 chrome.tabs.onUpdated.addListener((tabId, info) => {
   if (info.status === "complete") refresh();
 });
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "sync" && changes.masterProfile) refresh();
+  if (area === "local" && changes.siteToggles) refresh();
+});
