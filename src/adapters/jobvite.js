@@ -50,11 +50,20 @@ var AG_ADAPTER_JOBVITE = {
   },
 
   shouldFillResumeInput(el) {
-    const attachment = el.closest(".jv-add-attachment, .jv-add-attachment-item");
+    var attachment = el.closest(".jv-add-attachment, .jv-add-attachment-item");
     if (!attachment) return undefined;
-    let cur = attachment;
-    for (let i = 0; i < 6 && cur; i++) {
-      const h3 = cur.parentElement?.querySelector(":scope > h3, :scope > div > h3");
+    var dropdown = el.closest(".jv-add-attachment");
+    var dropdownVisible = dropdown && !dropdown.classList.contains("ng-hide");
+    if (dropdownVisible) {
+      var hasResumeHeader = Array.from(document.querySelectorAll("h3.jv-step-header, h3")).some(h => {
+        var t = h.textContent || "";
+        return /resume|\bcv\b/i.test(t) && !/cover\s*letter/i.test(t);
+      });
+      if (hasResumeHeader) return true;
+    }
+    var cur = attachment;
+    for (var i = 0; i < 6 && cur; i++) {
+      var h3 = cur.parentElement?.querySelector(":scope > h3, :scope > div > h3");
       if (h3 && /resume|cv/i.test(h3.textContent || "")) return true;
       if (h3 && /cover/i.test(h3.textContent || "")) return false;
       cur = cur.parentElement;
