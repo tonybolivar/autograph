@@ -244,6 +244,14 @@ function agSetCheckedSafe(el, target) {
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     }
+    if (!el.checked) {
+      if (el._valueTracker) {
+        try { el._valueTracker.setValue(""); } catch (e) {}
+      }
+      if (setter) setter.call(el, true);
+      else el.checked = true;
+      el.dispatchEvent(new Event("click", { bubbles: true, cancelable: true }));
+    }
   } else if (el.type === "checkbox") {
     const lbl = associatedLabel();
     if (lbl && lbl !== el) {
