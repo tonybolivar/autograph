@@ -221,6 +221,15 @@ var AG_DECLINE_OPTION_LABELS = [
   "Decline to self-identify",
   "Decline to Self Identify",
   "Prefer not to answer",
+  "Prefer not to disclose",
+  "Prefer not to say",
+  "I prefer not to answer",
+  "I prefer not to disclose",
+  "I prefer not to say",
+  "I don't wish to disclose",
+  "I don't wish to disclose.",
+  "I do not wish to disclose",
+  "I do not wish to disclose.",
   "I do not wish to answer",
   "I do not want to answer",
   "I choose not to self-identify",
@@ -230,6 +239,7 @@ var AG_DECLINE_OPTION_LABELS = [
   "Decline",
   "Do not wish to identify",
   "Opt Out",
+  "Choose Not to Disclose",
   "Decline to State"
 ];
 

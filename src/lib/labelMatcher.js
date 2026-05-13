@@ -3,7 +3,7 @@ var AG_LABEL_ALIASES = [
   [["last_name", "last name", "lastname", "surname", "family_name", "family name", "lname", "legalname--lastname"], "last_name"],
   [["email", "e-mail", "email_address", "emailaddress", "email address"], "email"],
   [["address_line_1", "address line 1", "address1", "address 1", "street_address", "street address", "streetaddress", "addressline1", "addresssection--addressline1", "addressstreet1"], "address_line_1"],
-  [["city", "municipality", "town", "town/city", "addresssection--city"], "city"],
+  [["city", "municipality", "town", "town/city", "addresssection--city", "location (city)", "city of residence", "current city", "city/town", "candidate-location", "candidate_location"], "city"],
   [["state_province", "state / province", "state/province", "state", "province", "region", "county", "addresssection--countryregion"], "state_province"],
   [["zip_postal", "zip / postal", "zip", "postal", "postcode", "zipcode", "zip_code", "zip code", "postal_code", "postal code", "postalcode", "addresssection--postalcode"], "zip_postal"],
   [["country", "country_region", "country/region", "addresssection--country"], "country"],
@@ -134,7 +134,7 @@ function agMatchToProfileField(label, fieldId) {
     for (const alias of aliases) {
       if (alias.length < 3) continue;
       if (AG_SHORT_ALIAS_SKIP.has(alias)) continue;
-      const re = new RegExp(`(?:^|[\\s_\\-/])${_agEscapeRegex(alias)}(?:$|[\\s_\\-/:?.!,;])`);
+      const re = new RegExp(`(?:^|[\\s_\\-/(\\[])${_agEscapeRegex(alias)}(?:$|[\\s_\\-/:?.!,;)\\]])`);
       const labHit = !labOversized && re.test(lab);
       const fidHit = re.test(fid);
       if (labHit || fidHit) {
@@ -152,7 +152,7 @@ function _agSubstringMatchesField(lab, fid, target) {
   for (const [aliases, tgt] of AG_LABEL_ALIASES) {
     if (tgt !== target) continue;
     for (const alias of aliases) {
-      const re = new RegExp(`(?:^|[\\s_\\-/])${_agEscapeRegex(alias)}(?:$|[\\s_\\-/:?.!,;])`);
+      const re = new RegExp(`(?:^|[\\s_\\-/(\\[])${_agEscapeRegex(alias)}(?:$|[\\s_\\-/:?.!,;)\\]])`);
       if (re.test(lab) || re.test(fid)) return true;
     }
     return false;
@@ -173,7 +173,7 @@ function agIsDemographicField(label, fieldId) {
   const tokenSep = /[\s_\-/]/;
   for (const [aliases] of AG_DEMOGRAPHIC_TOKENS) {
     for (const alias of aliases) {
-      const re = new RegExp(`(?:^|[\\s_\\-/])${_agEscapeRegex(alias)}(?:$|[\\s_\\-/:?.!,;])`);
+      const re = new RegExp(`(?:^|[\\s_\\-/(\\[])${_agEscapeRegex(alias)}(?:$|[\\s_\\-/:?.!,;)\\]])`);
       if ((!labOversized && re.test(lab)) || re.test(fid)) return true;
     }
   }
