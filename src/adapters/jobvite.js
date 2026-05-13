@@ -1,0 +1,1 @@
+const AG_ADAPTER_JOBVITE = {};

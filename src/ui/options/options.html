@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Autograph: Profile</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header class="header">
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <div class="brand-name">Autograph</div>
+        <div class="brand-sub">Free ATS autofill</div>
+      </div>
+    </div>
+    <div class="completion">
+      <div class="completion-bar"><div class="completion-fill" id="completionFill"></div></div>
+      <div class="completion-text"><span id="completionPercent">0%</span> complete</div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="about">About You</button>
+    <button class="tab" data-tab="employment">Employment</button>
+    <button class="tab" data-tab="demographic">Demographics</button>
+    <button class="tab" data-tab="sites">Sites</button>
+    <button class="tab" data-tab="data">Data</button>
+  </nav>
+
+  <main>
+    <section id="tab-about" class="panel active">
+      <h2>About You</h2>
+      <p class="panel-help">The basics every application asks for. Synced across your Chrome profile.</p>
+      <div class="grid" id="grid-about"></div>
+    </section>
+
+    <section id="tab-employment" class="panel">
+      <h2>Employment Questions</h2>
+      <p class="panel-help">Yes/no questions that come up constantly. Set once, fill everywhere.</p>
+      <div class="grid" id="grid-employment"></div>
+    </section>
+
+    <section id="tab-demographic" class="panel">
+      <h2>Demographic Questions</h2>
+      <p class="panel-help">Optional. Leave blank to default to "Decline to self-identify" on every ATS.</p>
+      <div class="grid" id="grid-demographic"></div>
+    </section>
+
+    <section id="tab-sites" class="panel">
+      <h2>Supported Sites</h2>
+      <p class="panel-help">Toggle Autograph off per platform if you want.</p>
+      <div class="site-list" id="siteList"></div>
+    </section>
+
+    <section id="tab-data" class="panel">
+      <h2>Your Data</h2>
+      <p class="panel-help">Everything Autograph stores lives on your device (and your Chrome sync). Nothing is sent anywhere.</p>
+      <div class="row-actions">
+        <button id="exportBtn" class="btn">Export profile as JSON</button>
+        <button id="importBtn" class="btn">Import from JSON</button>
+        <input type="file" id="importFile" accept="application/json" style="display:none">
+        <button id="clearCapturedBtn" class="btn btn-warn">Clear captured site data</button>
+        <button id="resetProfileBtn" class="btn btn-warn">Reset master profile</button>
+      </div>
+      <h3>Captured site data</h3>
+      <p class="panel-help">Custom answers Autograph remembered from each site you applied through.</p>
+      <div id="capturedList"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>Autograph v0.1 • GPL-3.0 • <a href="https://github.com/" target="_blank">source on GitHub</a></span>
+  </footer>
+
+  <script src="../../lib/normalizers.js"></script>
+  <script src="../../lib/sites.js"></script>
+  <script src="../../lib/masterProfile.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

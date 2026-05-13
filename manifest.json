@@ -1,0 +1,179 @@
+{
+  "manifest_version": 3,
+  "name": "Autograph - Free ATS Autofill",
+  "version": "0.1.0",
+  "description": "Free, open-source autofill for job applications across 21+ ATS platforms. No accounts, no paywalls, no tracking.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Autograph"
+  },
+  "background": {
+    "service_worker": "src/background/background.js"
+  },
+  "options_page": "src/ui/options/options.html",
+  "side_panel": {
+    "default_path": "src/ui/sidepanel/sidepanel.html"
+  },
+  "permissions": [
+    "storage",
+    "tabs",
+    "sidePanel",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.myworkdayjobs.com/*",
+    "*://*.smartrecruiters.com/*",
+    "*://*.eightfold.ai/*",
+    "*://*.oraclecloud.com/*",
+    "*://*.icims.com/*",
+    "*://jobs.ashbyhq.com/*",
+    "*://jobs.lever.co/*",
+    "*://*.successfactors.com/*",
+    "*://*.successfactors.eu/*",
+    "*://*.jobvite.com/*",
+    "*://*.rippling.com/*",
+    "*://app.loxo.co/*",
+    "*://*.loxo.co/*",
+    "*://*.paylocity.com/*",
+    "*://*.teamworkonline.com/*",
+    "*://*.breezy.hr/*",
+    "*://*.bullhornstaffing.com/*",
+    "*://*.bhstaffing.com/*",
+    "*://*.recruitee.com/*",
+    "*://careers.tellent.com/*",
+    "*://*.teamtailor.com/*",
+    "*://recruiting.ultipro.com/*",
+    "*://job-boards.greenhouse.io/*",
+    "*://boards.greenhouse.io/*",
+    "*://*.bamboohr.com/*",
+    "*://jobs.gem.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.myworkdayjobs.com/*",
+        "*://*.smartrecruiters.com/*",
+        "*://*.eightfold.ai/*",
+        "*://*.oraclecloud.com/*",
+        "*://jobs.ashbyhq.com/*",
+        "*://jobs.lever.co/*",
+        "*://*.successfactors.com/*",
+        "*://*.successfactors.eu/*",
+        "*://*.jobvite.com/*",
+        "*://*.rippling.com/*",
+        "*://app.loxo.co/*",
+        "*://*.loxo.co/job/*",
+        "*://*.paylocity.com/*",
+        "*://*.teamworkonline.com/*",
+        "*://*.breezy.hr/*",
+        "*://*.bullhornstaffing.com/*",
+        "*://*.bhstaffing.com/*",
+        "*://*.recruitee.com/*",
+        "*://careers.tellent.com/*",
+        "*://*.teamtailor.com/*",
+        "*://recruiting.ultipro.com/*",
+        "*://*.bamboohr.com/*",
+        "*://jobs.gem.com/*"
+      ],
+      "css": ["src/styles/content.css"],
+      "js": [
+        "src/lib/sites.js",
+        "src/lib/normalizers.js",
+        "src/lib/masterProfile.js",
+        "src/lib/labelMatcher.js",
+        "src/lib/domUtils.js",
+        "src/lib/capture.js",
+        "src/adapters/_default.js",
+        "src/adapters/workday.js",
+        "src/adapters/smartrecruiters.js",
+        "src/adapters/eightfold.js",
+        "src/adapters/oracle.js",
+        "src/adapters/ashby.js",
+        "src/adapters/lever.js",
+        "src/adapters/successfactors.js",
+        "src/adapters/jobvite.js",
+        "src/adapters/rippling.js",
+        "src/adapters/loxo.js",
+        "src/adapters/paylocity.js",
+        "src/adapters/breezyhr.js",
+        "src/adapters/bullhorn.js",
+        "src/adapters/recruitee.js",
+        "src/adapters/teamtailor.js",
+        "src/adapters/ukg.js",
+        "src/adapters/gem.js",
+        "src/adapters/phenom.js",
+        "src/adapters/bamboohr.js",
+        "src/content/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "all_frames": true,
+      "matches": ["*://*.icims.com/*"],
+      "css": ["src/styles/content.css"],
+      "js": [
+        "src/lib/sites.js",
+        "src/lib/normalizers.js",
+        "src/lib/masterProfile.js",
+        "src/lib/labelMatcher.js",
+        "src/lib/domUtils.js",
+        "src/lib/capture.js",
+        "src/adapters/_default.js",
+        "src/adapters/icims.js",
+        "src/content/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "all_frames": true,
+      "matches": [
+        "*://job-boards.greenhouse.io/*",
+        "*://boards.greenhouse.io/*"
+      ],
+      "css": ["src/styles/content.css"],
+      "js": [
+        "src/lib/sites.js",
+        "src/lib/normalizers.js",
+        "src/lib/masterProfile.js",
+        "src/lib/labelMatcher.js",
+        "src/lib/domUtils.js",
+        "src/lib/capture.js",
+        "src/adapters/_default.js",
+        "src/adapters/greenhouse.js",
+        "src/content/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "all_frames": true,
+      "matches": [
+        "*://job-boards.greenhouse.io/*",
+        "*://boards.greenhouse.io/*"
+      ],
+      "js": ["src/adapters/greenhouse-main.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://*.bamboohr.com/*"],
+      "js": ["src/adapters/bamboohr-main.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://*.paylocity.com/*"],
+      "js": ["src/adapters/paylocity-main.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    }
+  ]
+}

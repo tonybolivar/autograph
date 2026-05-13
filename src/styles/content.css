@@ -1,0 +1,10 @@
+[data-ag-filled="true"] {
+  background-color: #fffde7 !important;
+  outline: 2px solid #fdd835 !important;
+  outline-offset: -2px !important;
+  transition: background-color 200ms ease;
+}
+
+[data-ag-filled="true"]:focus {
+  outline: 2px solid #f59e0b !important;
+}

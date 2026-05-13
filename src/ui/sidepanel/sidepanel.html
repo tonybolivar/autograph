@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Autograph</title>
+  <link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+  <div class="panel">
+    <header class="hd">
+      <div class="logo">A</div>
+      <div>
+        <div class="title">Autograph</div>
+        <div class="sub">Free ATS autofill</div>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="card-row">
+        <div class="card-label">Profile</div>
+        <div class="card-value" id="profileStatus">Loading...</div>
+      </div>
+      <div class="bar"><div class="bar-fill" id="bar"></div></div>
+      <button class="btn-primary" id="openOptions">Edit profile</button>
+    </section>
+
+    <section class="card" id="siteCard">
+      <div class="card-row">
+        <div class="card-label">Detected site</div>
+        <div class="card-value" id="siteName">None</div>
+      </div>
+      <div class="card-row">
+        <div class="card-label">Enabled</div>
+        <label class="switch">
+          <input type="checkbox" id="siteToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <button class="btn-secondary" id="fillNow">Fill this page</button>
+    </section>
+
+    <footer class="ft">
+      Autograph v0.1 GPL-3.0
+    </footer>
+  </div>
+
+  <script src="../../lib/sites.js"></script>
+  <script src="../../lib/masterProfile.js"></script>
+  <script src="sidepanel.js"></script>
+</body>
+</html>
