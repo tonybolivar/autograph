@@ -33,6 +33,46 @@ var AG_ADAPTER_RECRUITEE = {
     return null;
   },
 
+  isCheckbox(el) {
+    if (el.tagName.toLowerCase() !== "input") return false;
+    var t = (el.type || "").toLowerCase();
+    return t === "radio" || t === "checkbox";
+  },
+
+  fillCheckbox(el, target) {
+    if (el.checked === target) return false;
+    var labelEl = null;
+    if (el.id) labelEl = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+    if (!labelEl) {
+      var sib = el.nextElementSibling;
+      while (sib) {
+        if (sib.tagName === "LABEL") { labelEl = sib; break; }
+        sib = sib.nextElementSibling;
+      }
+    }
+    if (!labelEl) labelEl = el.parentElement && el.parentElement.querySelector("label");
+    var clickTarget = labelEl || el;
+    if (target) {
+      try {
+        clickTarget.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
+        clickTarget.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
+        clickTarget.click();
+      } catch (e) {}
+    }
+    if (el.checked !== target) {
+      var proto = window.HTMLInputElement.prototype;
+      var setter = Object.getOwnPropertyDescriptor(proto, "checked")?.set;
+      if (setter) setter.call(el, target); else el.checked = target;
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    return el.checked === target;
+  },
+
+  getCheckboxChecked(el) {
+    return el.checked;
+  },
+
   synthesizeValue(profile, fieldId, label) {
     const fid = (fieldId || "").toLowerCase();
     const lab = (label || "").toLowerCase();
