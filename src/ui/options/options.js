@@ -19,6 +19,12 @@ function fieldInput(field, currentValue) {
       if (opt === currentValue) o.selected = true;
       input.appendChild(o);
     }
+  } else if (field.type === "textarea") {
+    input = document.createElement("textarea");
+    input.rows = 4;
+    input.value = currentValue || "";
+    input.placeholder = field.label;
+    wrap.classList.add("field-textarea");
   } else {
     input = document.createElement("input");
     input.type = field.type || "text";

@@ -110,6 +110,25 @@ main {
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
 }
 .field input.invalid { border-color: #ef4444; }
+.field textarea {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: #fff;
+  color: #0f172a;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+}
+.field-textarea {
+  grid-column: span 2;
+}
+.field textarea:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
 .field .save-pulse {
   font-size: 11px; color: #16a34a;
   opacity: 0;
