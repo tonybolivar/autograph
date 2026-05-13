@@ -144,8 +144,20 @@ function agExtractGroupLabel(el) {
   while (ancestor && depth < 6) {
     const hasMultipleRadios = ancestor.querySelectorAll(`input[type="radio"][name="${el.name ? CSS.escape(el.name) : ''}"]`).length > 1;
     if (hasMultipleRadios) {
-      const lg = ancestor.querySelector(":scope > legend, :scope > label, :scope > [class*='label'], :scope > [class*='heading']");
+      const lg = ancestor.querySelector(":scope > legend, :scope > label, :scope > [class*='label'], :scope > [class*='heading'], :scope > h2, :scope > h3, :scope > h4, :scope > p");
       if (lg && lg.textContent.trim()) return agCleanLabel(lg.textContent);
+      let sib = ancestor.previousElementSibling;
+      let sHops = 0;
+      while (sib && sHops < 3) {
+        if (/^(LABEL|LEGEND|H1|H2|H3|H4|H5|H6|P|DIV)$/.test(sib.tagName)) {
+          const txt = (sib.textContent || "").trim();
+          if (txt && txt.length < 220 && !sib.querySelector("input, select, textarea")) {
+            return agCleanLabel(txt);
+          }
+        }
+        sib = sib.previousElementSibling;
+        sHops++;
+      }
     }
     ancestor = ancestor.parentElement;
     depth++;
