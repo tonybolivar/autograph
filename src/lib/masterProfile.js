@@ -32,6 +32,8 @@ var AG_PROFILE_FIELDS = [
   { id: "personal_pronouns", label: "Pronouns", type: "text", section: "about" },
   { id: "preferred_name", label: "Preferred Name", type: "text", section: "about" },
   { id: "address_line_2", label: "Address Line 2", type: "text", section: "about" },
+  { id: "account_email", label: "Account Email (for ATS account signups)", type: "email", section: "about" },
+  { id: "account_password", label: "Account Password (for ATS account signups)", type: "password", section: "about" },
   { id: "current_company", label: "Current Company", type: "text", section: "experience" },
   { id: "current_title", label: "Current Title", type: "text", section: "experience" },
   { id: "years_experience", label: "Total Years of Experience", type: "text", section: "experience" },

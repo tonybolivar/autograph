@@ -145,9 +145,33 @@ var AG_ADAPTER_WORKDAY = {
     return lbl ? lbl.textContent.trim() : el.value;
   },
 
-  async prefillPass({ workHistory }) {
+  async prefillPass({ workHistory, profile }) {
     await this._maybeExpandWorkHistory(workHistory);
     await this._maybeAttachResume();
+    await this._maybeFillAccountCreation(profile);
+  },
+
+  async _maybeFillAccountCreation(profile) {
+    if (!profile) return;
+    const email = document.querySelector('input[data-automation-id="email"]');
+    const pw = document.querySelector('input[data-automation-id="password"]');
+    const verifyPw = document.querySelector('input[data-automation-id="verifyPassword"]');
+    if (!pw && !email) return;
+    const useEmail = profile.account_email || profile.email;
+    if (email && !email.value && useEmail) this._setPwInput(email, useEmail);
+    if (pw && !pw.value && profile.account_password) this._setPwInput(pw, profile.account_password);
+    if (verifyPw && !verifyPw.value && profile.account_password) this._setPwInput(verifyPw, profile.account_password);
+  },
+
+  _setPwInput(el, value) {
+    const proto = window.HTMLInputElement.prototype;
+    const setter = Object.getOwnPropertyDescriptor(proto, "value")?.set;
+    el.focus();
+    if (setter) setter.call(el, value);
+    else el.value = value;
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+    el.dispatchEvent(new Event("blur", { bubbles: true }));
   },
 
   _pageKey() {

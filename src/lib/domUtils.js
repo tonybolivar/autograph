@@ -171,6 +171,20 @@ function agIsExcludedInput(el) {
   if (AG_EXCLUDED_INPUT_TYPES.has(t)) return true;
   const style = window.getComputedStyle(el);
   if (style.webkitTextSecurity && style.webkitTextSecurity !== "none") return true;
+  if (agLooksLikeHoneypot(el)) return true;
+  return false;
+}
+
+function agLooksLikeHoneypot(el) {
+  const auto = (el.getAttribute("data-automation-id") || "").toLowerCase();
+  if (/honeypot|beecatcher|do-not-fill|spam[-_]?check/.test(auto)) return true;
+  const name = (el.name || "").toLowerCase();
+  const id = (el.id || "").toLowerCase();
+  if (/^hp_/.test(name) || /^hp_/.test(id) || /honeypot/.test(name) || /honeypot/.test(id)) return true;
+  const aria = (el.getAttribute("aria-label") || "").toLowerCase();
+  const lbl = el.id ? document.querySelector(`label[for="${CSS.escape(el.id)}"]`) : null;
+  const lblText = (lbl?.textContent || "").toLowerCase();
+  if (/this input is for robots|do not enter (it|anything|this)|leave (this )?blank|spam (filter|check)/.test(aria + " " + lblText)) return true;
   return false;
 }
 
