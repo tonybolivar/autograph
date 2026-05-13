@@ -10,8 +10,15 @@ const AG_ADAPTER_GREENHOUSE = {
     if (el.name === "g-recaptcha-response") return true;
     if (el.classList && el.classList.contains("iti__search-input")) return true;
     if (el.id && /^iti-\d+__search-input$/.test(el.id)) return true;
-    if (el.closest && el.closest(".iti, [class*='iti__'], [class*='iti--'], .phone-input__country")) return true;
+    if (el.closest && el.closest(".iti, [class*='iti__'], [class*='iti--']")) return true;
     return false;
+  },
+
+  getFieldId(el) {
+    if (el.closest && el.closest(".phone-input__country")) return "phone_country";
+    if (el.id && !/^react|^:r/.test(el.id)) return el.id;
+    if (el.name) return el.name;
+    return null;
   },
 
   shouldFillResumeInput() {
@@ -25,12 +32,6 @@ const AG_ADAPTER_GREENHOUSE = {
       if (document.querySelector('input#first_name, input#email, input[id^="question_"]')) return;
       await new Promise(r => setTimeout(r, 200));
     }
-  },
-
-  getFieldId(el) {
-    if (el.id && !/^react|^:r/.test(el.id)) return el.id;
-    if (el.name) return el.name;
-    return null;
   },
 
   getFieldLabel(el) {
