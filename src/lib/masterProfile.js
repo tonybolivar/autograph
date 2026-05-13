@@ -1,4 +1,4 @@
-const AG_PROFILE_SECTIONS = [
+var AG_PROFILE_SECTIONS = [
   { id: "about", label: "About You" },
   { id: "experience", label: "Work Experience" },
   { id: "education", label: "Education" },
@@ -6,11 +6,11 @@ const AG_PROFILE_SECTIONS = [
   { id: "demographic", label: "Demographic Questions" }
 ];
 
-const AG_MONTH_OPTIONS = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+var AG_MONTH_OPTIONS = ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-const AG_LINKEDIN_RE = /\blinkedin\.com\/(?:in|pub|profile)\/[^\s/?#]+/i;
+var AG_LINKEDIN_RE = /\blinkedin\.com\/(?:in|pub|profile)\/[^\s/?#]+/i;
 
-const AG_PROFILE_FIELDS = [
+var AG_PROFILE_FIELDS = [
   { id: "first_name", label: "First Name", type: "text", section: "about" },
   { id: "last_name", label: "Last Name", type: "text", section: "about" },
   { id: "email", label: "Email", type: "email", section: "about" },
@@ -39,12 +39,15 @@ const AG_PROFILE_FIELDS = [
   { id: "willing_to_relocate", label: "Willing to relocate?", type: "select", section: "employment", options: ["", "Yes", "No"] },
   { id: "bound_by_noncompete", label: "Bound by non-compete?", type: "select", section: "employment", options: ["", "Yes", "No"] },
   { id: "is_veteran", label: "Veteran status", type: "select", section: "demographic", options: ["", "Yes", "No", "Prefer Not To Answer"] },
-  { id: "have_disability", label: "Disability status", type: "select", section: "demographic", options: ["", "Yes", "No", "Prefer Not To Answer"] }
+  { id: "have_disability", label: "Disability status", type: "select", section: "demographic", options: ["", "Yes", "No", "Prefer Not To Answer"] },
+  { id: "gender", label: "Gender", type: "select", section: "demographic", options: ["", "Male", "Female", "Non-binary", "Prefer Not To Answer"] },
+  { id: "hispanic_ethnicity", label: "Hispanic or Latino?", type: "select", section: "demographic", options: ["", "Yes", "No", "Prefer Not To Answer"] },
+  { id: "race", label: "Race / Ethnicity", type: "select", section: "demographic", options: ["", "White", "Black or African American", "Hispanic or Latino", "Asian", "Native Hawaiian or Other Pacific Islander", "American Indian or Alaska Native", "Two or More Races", "Prefer Not To Answer"] }
 ];
 
-const AG_PROFILE_IDS = new Set(AG_PROFILE_FIELDS.map(f => f.id));
-const AG_PROFILE_BY_ID = Object.fromEntries(AG_PROFILE_FIELDS.map(f => [f.id, f]));
-const AG_PROFILE_OVERRIDABLE_ON_CAPTURE = new Set(
+var AG_PROFILE_IDS = new Set(AG_PROFILE_FIELDS.map(f => f.id));
+var AG_PROFILE_BY_ID = Object.fromEntries(AG_PROFILE_FIELDS.map(f => [f.id, f]));
+var AG_PROFILE_OVERRIDABLE_ON_CAPTURE = new Set(
   AG_PROFILE_FIELDS.filter(f => f.section === "about").map(f => f.id)
 );
 

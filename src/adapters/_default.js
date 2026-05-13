@@ -1,4 +1,4 @@
-const AG_ADAPTER_DEFAULT = {
+var AG_ADAPTER_DEFAULT = {
   fieldSelector: "input, select, textarea",
   isExcluded: () => false,
   getFieldId: () => null,

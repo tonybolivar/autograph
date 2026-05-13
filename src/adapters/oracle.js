@@ -1,4 +1,4 @@
-const AG_ADAPTER_ORACLE = {
+var AG_ADAPTER_ORACLE = {
   fieldSelector: 'input:not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]), select, textarea, oj-select-single, oj-select-multiple, oj-combobox-one',
 
   getJobId(url) {

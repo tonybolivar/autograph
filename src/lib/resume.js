@@ -39,8 +39,8 @@ async function agClearResume() {
   await chrome.storage.local.remove("resumeFile");
 }
 
-const AG_RESUME_LABEL_RE = /\b(resume|cv|curriculum\s*vitae|upload\s*(?:your\s*)?resume|resume\s*\/?\s*cv)\b/i;
-const AG_COVER_LETTER_RE = /\bcover\s*letter\b/i;
+var AG_RESUME_LABEL_RE = /\b(resume|cv|curriculum\s*vitae|upload\s*(?:your\s*)?resume|resume\s*\/?\s*cv)\b/i;
+var AG_COVER_LETTER_RE = /\bcover\s*letter\b/i;
 
 function agIsResumeFileInput(el) {
   if (el.tagName.toLowerCase() !== "input") return false;

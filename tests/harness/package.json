@@ -1,0 +1,9 @@
+{
+  "name": "autograph-harness",
+  "version": "0.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "playwright": "^1.60.0"
+  }
+}

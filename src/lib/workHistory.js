@@ -1,4 +1,4 @@
-const AG_WORK_ENTRY_FIELDS = [
+var AG_WORK_ENTRY_FIELDS = [
   { id: "company", label: "Company", type: "text", required: true },
   { id: "title", label: "Title", type: "text", required: true },
   { id: "location", label: "Location", type: "text" },
@@ -71,14 +71,14 @@ async function agMoveWorkEntry(id, delta) {
   return true;
 }
 
-const AG_WORK_INDEX_PATTERNS = [
+var AG_WORK_INDEX_PATTERNS = [
   /experience\[(\d+)\]/i,
   /(?:work\s*experience|employment|position|job|experience|employer)[\s\-_]*?#?\s*(\d+)/i,
   /^(?:work|job|position|exp)[\s\-_]*?(\d+)\b/i,
   /\b(\d+)(?:st|nd|rd|th)?\s+(?:most\s+recent|previous|prior)\s+(?:job|position|role|employer)/i
 ];
 
-const AG_WORK_SUBFIELD_RULES = [
+var AG_WORK_SUBFIELD_RULES = [
   { match: (h) => /\b(company|employer|organization)\b/.test(h) && !/\b(current\s*company|currentcompany)\b/.test(h), sub: "company" },
   { match: (h) => /\b(job\s*title|title|position|role|jobtitle)\b/.test(h) && !/\bcurrent\s*title\b/.test(h), sub: "title" },
   { match: (h) => /\b(location|city|where)\b/.test(h), sub: "location" },

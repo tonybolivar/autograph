@@ -1,4 +1,4 @@
-const AG_ADAPTER_RIPPLING = {
+var AG_ADAPTER_RIPPLING = {
   fieldSelector: 'input:not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]), select, textarea, [role="combobox"]',
 
   getJobId(url) {

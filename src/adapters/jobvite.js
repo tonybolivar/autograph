@@ -1,4 +1,4 @@
-const AG_ADAPTER_JOBVITE = {
+var AG_ADAPTER_JOBVITE = {
   fieldSelector: 'input:not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]), select, textarea',
 
   getJobId(url) {

@@ -1,4 +1,4 @@
-const AG_SUPPORTED_SITES = [
+var AG_SUPPORTED_SITES = [
   { id: "workday", name: "Workday", hostMatch: ".myworkdayjobs.com", adapter: "workday" },
   { id: "greenhouse", name: "Greenhouse", hostMatch: ".greenhouse.io", adapter: "greenhouse" },
   { id: "eightfold", name: "Eightfold", hostMatch: ".eightfold.ai", adapter: "eightfold" },

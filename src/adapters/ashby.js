@@ -1,4 +1,4 @@
-const AG_ADAPTER_ASHBY = {
+var AG_ADAPTER_ASHBY = {
   fieldSelector: 'input:not([type="hidden"]):not([type="file"]):not([type="submit"]), select, textarea, [role="combobox"], [data-testid^="_systemfield_"], [data-testid^="_customfield_"]',
 
   getJobId(url) {

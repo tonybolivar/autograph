@@ -1,4 +1,4 @@
-const AG_ADAPTER_WORKDAY = {
+var AG_ADAPTER_WORKDAY = {
   fieldSelector: 'input:not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]):not([data-automation-id="searchBox"]), select, textarea, button[data-automation-id*="select"], button[aria-haspopup="listbox"], [data-automation-id="multiSelectContainer"]',
 
   gateFillOnVisibility: true,

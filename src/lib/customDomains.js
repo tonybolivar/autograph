@@ -1,4 +1,4 @@
-const AG_KNOWN_CUSTOM_DOMAINS = {
+var AG_KNOWN_CUSTOM_DOMAINS = {
   "careers.formlabs.com": "greenhouse"
 };
 

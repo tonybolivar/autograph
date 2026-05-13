@@ -1,4 +1,4 @@
-const AG_LABEL_ALIASES = [
+var AG_LABEL_ALIASES = [
   [["first_name", "first name", "firstname", "given_name", "given name", "fname", "legalname--firstname"], "first_name"],
   [["last_name", "last name", "lastname", "surname", "family_name", "family name", "lname", "legalname--lastname"], "last_name"],
   [["email", "e-mail", "email_address", "emailaddress", "email address"], "email"],
@@ -16,7 +16,7 @@ const AG_LABEL_ALIASES = [
   [["twitter", "x profile", "twitter profile", "twitter url", "twitter handle", "twitter_url", "twitter_profile", "x_url"], "twitter_profile"],
   [["current_company", "current company", "company", "employer", "current employer", "present employer", "currentcompany"], "current_company"],
   [["current_title", "current title", "current position", "job title", "current job title", "current_position", "title", "position", "current role"], "current_title"],
-  [["years_experience", "years of experience", "years experience", "total years of experience", "yearsofexperience", "professional experience years", "experience years"], "years_experience"],
+  [["years_experience", "years of experience", "years experience", "total years of experience", "yearsofexperience", "professional experience years", "experience years", "how many years", "industry experience", "years of industry experience", "years of relevant experience", "year experience", "yoe"], "years_experience"],
   [["school", "university", "college", "institution", "school name", "university name", "education_school", "education school"], "education_school"],
   [["degree", "degree type", "level of education", "qualification", "education level", "education_degree", "highest degree"], "education_degree"],
   [["major", "field of study", "concentration", "education_major", "subject", "discipline"], "education_major"],
@@ -27,10 +27,13 @@ const AG_LABEL_ALIASES = [
   [["willing_to_relocate", "willing to relocate", "relocate", "relocation", "open to relocation", "require relocation"], "willing_to_relocate"],
   [["bound_by_noncompete", "non-compete", "noncompete", "non compete", "bound by non-compete", "non-compete agreement", "subject to any noncompete", "non_disclosure", "non-competition", "non_competition"], "bound_by_noncompete"],
   [["is_veteran", "veteran", "veteran status", "protected veteran", "veteran_status", "veteranstatus", "are you a veteran", "vevraa", "served in the military"], "is_veteran"],
-  [["have_disability", "disability", "disability status", "disability-status", "disabled", "disability_status", "disabilitystatus", "do you have a disability", "have a disability", "disability_heading"], "have_disability"]
+  [["have_disability", "disability", "disability status", "disability-status", "disabled", "disability_status", "disabilitystatus", "do you have a disability", "have a disability", "disability_heading"], "have_disability"],
+  [["gender", "gender identity", "what is your gender", "your gender", "eeoc_gender"], "gender"],
+  [["hispanic_ethnicity", "hispanic", "latino", "hispanic or latino", "are you hispanic or latino", "hispanic_latino"], "hispanic_ethnicity"],
+  [["race", "ethnicity", "race / ethnicity", "race/ethnicity", "race or ethnicity", "ethnic background", "race_ethnicity", "eeoc_race"], "race"]
 ];
 
-const AG_DEMOGRAPHIC_TOKENS = [
+var AG_DEMOGRAPHIC_TOKENS = [
   [["gender", "gender identity", "what is your gender", "your gender"], "gender"],
   [["hispanic", "latino", "hispanic or latino", "are you hispanic or latino", "hispanic_latino", "hispanic_ethnicity"], "hispanic_ethnicity"],
   [["race", "ethnicity", "race / ethnicity", "race/ethnicity", "race or ethnicity", "ethnic background", "race ethnicity", "race_ethnicity"], "race"],

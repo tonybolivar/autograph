@@ -1,8 +1,8 @@
-const AG_EXCLUDED_INPUT_TYPES = new Set(["password", "file", "hidden", "image", "submit", "reset", "button"]);
+var AG_EXCLUDED_INPUT_TYPES = new Set(["password", "file", "hidden", "image", "submit", "reset", "button"]);
 
-const AG_TEXT_INPUT_TYPES = new Set(["text", "email", "tel", "url", "number", "search", "date", "range"]);
+var AG_TEXT_INPUT_TYPES = new Set(["text", "email", "tel", "url", "number", "search", "date", "range"]);
 
-const AG_GENERIC_ID_RES = [
+var AG_GENERIC_ID_RES = [
   /^(input|field|uid|el|wd|ember|react|ext)-?\d+$/i,
   /^[a-f0-9-]{20,}$/i,
   /^\d+$/

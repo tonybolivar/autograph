@@ -1,4 +1,4 @@
-const AG_ADAPTER_PHENOM = {
+var AG_ADAPTER_PHENOM = {
   fieldSelector: 'input:not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]), select, textarea',
 
   getFieldId(el) {

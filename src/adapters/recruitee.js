@@ -1,4 +1,4 @@
-const AG_ADAPTER_RECRUITEE = {
+var AG_ADAPTER_RECRUITEE = {
   fieldSelector: 'input:not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]), select, textarea, [role="combobox"]',
 
   getJobId(url) {

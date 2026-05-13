@@ -1,6 +1,6 @@
-const AG_PHONE_TYPE_FALLBACKS = ["Mobile", "Cell", "Personal", "Home"];
+var AG_PHONE_TYPE_FALLBACKS = ["Mobile", "Cell", "Personal", "Home"];
 
-const AG_US_STATES = {
+var AG_US_STATES = {
   alabama: "AL", alaska: "AK", arizona: "AZ", arkansas: "AR", california: "CA",
   colorado: "CO", connecticut: "CT", delaware: "DE", florida: "FL", georgia: "GA",
   hawaii: "HI", idaho: "ID", illinois: "IL", indiana: "IN", iowa: "IA",
@@ -14,20 +14,20 @@ const AG_US_STATES = {
   "district of columbia": "DC"
 };
 
-const AG_YES_NO_NORMALIZER = (raw) => {
+var AG_YES_NO_NORMALIZER = (raw) => {
   const t = String(raw).toLowerCase();
   if (/\byes\b/.test(t)) return "Yes";
   if (/\bno\b/.test(t)) return "No";
   return null;
 };
 
-const AG_DECLINE_NORMALIZER = (raw) => {
+var AG_DECLINE_NORMALIZER = (raw) => {
   const t = String(raw).toLowerCase();
   if (/\bprefer\s+not\b|\bdecline\b|\bdo not wish\b|\bchoose not\b|\bopt[-\s]?out\b/.test(t)) return "Prefer Not To Answer";
   return null;
 };
 
-const AG_VALUE_NORMALIZERS = {
+var AG_VALUE_NORMALIZERS = {
   work_authorization: AG_YES_NO_NORMALIZER,
   need_sponsorship: AG_YES_NO_NORMALIZER,
   bound_by_noncompete: AG_YES_NO_NORMALIZER,
@@ -56,7 +56,7 @@ const AG_VALUE_NORMALIZERS = {
   }
 };
 
-const AG_VALUE_DENORMALIZERS = {
+var AG_VALUE_DENORMALIZERS = {
   is_veteran: (canonical) => {
     switch (canonical) {
       case "Yes": return [
@@ -124,6 +124,67 @@ const AG_VALUE_DENORMALIZERS = {
     const lower = canonical.toLowerCase();
     return [canonical, ...AG_PHONE_TYPE_FALLBACKS.filter(t => t.toLowerCase() !== lower)];
   },
+  gender: (canonical) => {
+    switch (canonical) {
+      case "Male": return ["Male", "Man", "M", "male"];
+      case "Female": return ["Female", "Woman", "F", "female"];
+      case "Non-binary": return ["Non-binary", "Nonbinary", "Non binary", "Gender non-conforming", "Other"];
+      case "Prefer Not To Answer": return ["Decline to self-identify", "Prefer Not To Answer", "I do not wish to self-identify", "Do not wish to identify", "Decline"];
+      default: return [canonical];
+    }
+  },
+  hispanic_ethnicity: (canonical) => {
+    switch (canonical) {
+      case "Yes": return ["Yes", "Hispanic or Latino", "Hispanic/Latino", "I am Hispanic or Latino"];
+      case "No": return ["No", "Not Hispanic or Latino", "I am not Hispanic or Latino"];
+      case "Prefer Not To Answer": return ["Decline to self-identify", "Prefer Not To Answer", "I do not wish to self-identify"];
+      default: return [canonical];
+    }
+  },
+  race: (canonical) => {
+    switch (canonical) {
+      case "White": return [
+        "White",
+        "White (Not Hispanic or Latino)",
+        "White - A person having origins in any of the original peoples of Europe, the Middle East, or North Africa",
+        "Caucasian"
+      ];
+      case "Black or African American": return [
+        "Black or African American",
+        "Black or African American (Not Hispanic or Latino)",
+        "Black",
+        "African American"
+      ];
+      case "Hispanic or Latino": return [
+        "Hispanic or Latino",
+        "Hispanic/Latino",
+        "Hispanic or Latino - A person of Cuban, Mexican, Puerto Rican, South or Central American, or other Spanish culture or origin regardless of race"
+      ];
+      case "Asian": return [
+        "Asian",
+        "Asian (Not Hispanic or Latino)"
+      ];
+      case "Native Hawaiian or Other Pacific Islander": return [
+        "Native Hawaiian or Other Pacific Islander",
+        "Native Hawaiian or Other Pacific Islander (Not Hispanic or Latino)",
+        "Pacific Islander"
+      ];
+      case "American Indian or Alaska Native": return [
+        "American Indian or Alaska Native",
+        "American Indian or Alaska Native (Not Hispanic or Latino)",
+        "American Indian",
+        "Alaska Native"
+      ];
+      case "Two or More Races": return [
+        "Two or More Races",
+        "Two or More Races (Not Hispanic or Latino)",
+        "Mixed",
+        "Multiple"
+      ];
+      case "Prefer Not To Answer": return ["Decline to self-identify", "Prefer Not To Answer", "I do not wish to self-identify"];
+      default: return [canonical];
+    }
+  },
   state_province: (canonical) => {
     if (!canonical) return [];
     const lower = canonical.toLowerCase();
@@ -139,7 +200,7 @@ const AG_VALUE_DENORMALIZERS = {
   }
 };
 
-const AG_DECLINE_OPTION_LABELS = [
+var AG_DECLINE_OPTION_LABELS = [
   "Decline to self-identify",
   "Decline to Self Identify",
   "Prefer not to answer",
@@ -155,7 +216,7 @@ const AG_DECLINE_OPTION_LABELS = [
   "Decline to State"
 ];
 
-const AG_DECLINE_REGEX = /\bdecline\b|\bprefer not\b|\bdo not wish\b|\bwish to answer\b|\bnot want to answer\b|\bchoose not\b|\bnot declared\b|\bnot to disclose\b|\bnot to (?:self-?)?identify\b|\bopt[-\s]?out\b|\bdon['']?t (?:want|wish)\b/i;
+var AG_DECLINE_REGEX = /\bdecline\b|\bprefer not\b|\bdo not wish\b|\bwish to answer\b|\bnot want to answer\b|\bchoose not\b|\bnot declared\b|\bnot to disclose\b|\bnot to (?:self-?)?identify\b|\bopt[-\s]?out\b|\bdon['']?t (?:want|wish)\b/i;
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = {
