@@ -28,6 +28,15 @@ var AG_ADAPTER_RIPPLING = {
 
   emptyPlaceholderValues: ["Select...", "Select", "", "Choose...", "Search"],
 
+  synthesizeValue(profile, fieldId, label) {
+    var lab = (label || "").toLowerCase().trim();
+    if (lab === "location" || lab === "location*") {
+      var parts = [profile.city, profile.state_province, profile.country].filter(Boolean);
+      return parts.length ? parts.join(", ") : undefined;
+    }
+    return undefined;
+  },
+
   async fillDropdown(el, fieldId, candidates) {
     if (!candidates || candidates.length === 0) return false;
     el.click();
