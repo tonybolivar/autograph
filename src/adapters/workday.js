@@ -1,1 +1,171 @@
-const AG_ADAPTER_WORKDAY = {};
+const AG_ADAPTER_WORKDAY = {
+  fieldSelector: 'input:not([type="hidden"]):not([type="file"]):not([type="submit"]):not([type="button"]):not([data-automation-id="searchBox"]), select, textarea, button[data-automation-id*="select"], button[aria-haspopup="listbox"], [data-automation-id="multiSelectContainer"]',
+
+  gateFillOnVisibility: true,
+  suppressRefillOnRerender: true,
+
+  getJobId(url) {
+    const m = url.match(/myworkdayjobs\.com\/[^/]+\/(?:job|details)\/[^/]+\/([^/?#]+)/i) ||
+              url.match(/jobId=([A-Za-z0-9-_]+)/i);
+    return m ? m[1] : null;
+  },
+
+  getInstanceId(url) {
+    try {
+      const u = new URL(url);
+      const parts = u.hostname.split(".");
+      return parts.slice(0, -3).join(".") || parts[0];
+    } catch (e) {
+      return null;
+    }
+  },
+
+  instanceFields: [/^job-/, /^application-/, /candidatePosting/i],
+
+  async waitForReady() {
+    const start = Date.now();
+    while (Date.now() - start < 8000) {
+      if (document.querySelector("[data-automation-id]")) return;
+      await new Promise(r => setTimeout(r, 200));
+    }
+  },
+
+  getFieldId(el) {
+    let host = el;
+    const automationHost = el.closest("[data-automation-id]");
+    if (automationHost) host = automationHost;
+    const auto = host.getAttribute("data-automation-id");
+    if (auto && !/^(input|textInput|formField|wrapper)\d*$/i.test(auto)) {
+      const compoundParent = el.closest("[data-automation-id*='--']");
+      if (compoundParent) {
+        const compound = compoundParent.getAttribute("data-automation-id");
+        if (compound && compound.includes("--")) return compound.toLowerCase();
+      }
+      return auto.toLowerCase();
+    }
+    if (el.name) return el.name;
+    if (el.id && !/^input-\d+$/.test(el.id)) return el.id;
+    return null;
+  },
+
+  getFieldLabel(el) {
+    const labelledBy = el.getAttribute("aria-labelledby");
+    if (labelledBy) {
+      const refs = labelledBy.split(/\s+/).map(id => document.getElementById(id)).filter(Boolean);
+      const text = refs.map(r => r.textContent.trim()).join(" ").trim();
+      if (text) return text.replace(/\*$/, "").trim();
+    }
+    const ariaLabel = el.getAttribute("aria-label");
+    if (ariaLabel) return ariaLabel.replace(/\*$/, "").trim();
+    const wrap = el.closest("[data-automation-id]");
+    if (wrap) {
+      const lbl = wrap.querySelector("label");
+      if (lbl && lbl.textContent.trim()) return lbl.textContent.replace(/\*$/, "").trim();
+    }
+    return null;
+  },
+
+  isExcluded(el) {
+    if (el.closest("[data-automation-id='resumeAttachments']")) return true;
+    if (el.closest("[data-automation-id='legalName']") && el.getAttribute("data-automation-id") === "legalName") return true;
+    return false;
+  },
+
+  isDropdown(el) {
+    const tag = el.tagName.toLowerCase();
+    if (tag === "button") {
+      const auto = el.getAttribute("data-automation-id") || "";
+      if (/select|prompt|dropdown/i.test(auto)) return true;
+      if (el.getAttribute("aria-haspopup") === "listbox") return true;
+    }
+    if (el.getAttribute && el.getAttribute("data-automation-id") === "multiSelectContainer") return true;
+    return false;
+  },
+
+  isMultiselect(el) {
+    return el.getAttribute && el.getAttribute("data-automation-id") === "multiSelectContainer";
+  },
+
+  getDropdownValue(el) {
+    const display = el.querySelector("[data-automation-id*='selectedItem'], .css-1cu7zr1");
+    if (display && display.textContent.trim()) return display.textContent.trim();
+    return (el.textContent || "").trim();
+  },
+
+  emptyPlaceholderValues: ["", "Select One", "Select one", "Select"],
+
+  async fillDropdown(el, fieldId, candidates) {
+    if (!candidates || candidates.length === 0) return false;
+    el.scrollIntoView({ block: "center", behavior: "instant" });
+    el.click();
+    await new Promise(r => setTimeout(r, 250));
+    let panel = document.querySelector("[data-automation-id='promptOption'], [role='listbox'][data-automation-id]");
+    if (!panel) {
+      const popup = document.querySelector("[role='dialog'][aria-expanded='true'], [role='listbox']");
+      if (popup) panel = popup;
+    }
+    let options = [];
+    if (panel) {
+      options = Array.from(panel.querySelectorAll("[data-automation-id='promptOption'], [role='option']"));
+    }
+    if (options.length === 0) {
+      options = Array.from(document.querySelectorAll("[data-automation-id='promptOption']"));
+    }
+    if (options.length === 0) {
+      el.click();
+      return false;
+    }
+    for (const cand of candidates) {
+      const lower = String(cand).toLowerCase().trim();
+      const m = options.find(o => {
+        const t = o.textContent.trim().toLowerCase();
+        return t === lower || t.startsWith(lower);
+      });
+      if (m) {
+        m.click();
+        await new Promise(r => setTimeout(r, 150));
+        return true;
+      }
+    }
+    document.body.click();
+    return false;
+  },
+
+  attachDropdownListener(el, fieldId, onChange) {
+    const observer = new MutationObserver(() => onChange("workday-dropdown"));
+    observer.observe(el, { childList: true, subtree: true, characterData: true });
+  },
+
+  getRadioGroup(el) {
+    return el.closest("[data-automation-id='radioBtn'], [role='radiogroup']");
+  },
+
+  getRadioOptionText(el) {
+    const lbl = el.closest("label") || el.parentElement?.querySelector("label");
+    return lbl ? lbl.textContent.trim() : el.value;
+  },
+
+  synthesizeValue(profile, fieldId, label) {
+    const fid = (fieldId || "").toLowerCase();
+    const lab = (label || "").toLowerCase();
+    if ((fid.includes("legalname--firstname") || fid === "firstname") && profile.first_name) {
+      return profile.first_name;
+    }
+    if ((fid.includes("legalname--lastname") || fid === "lastname") && profile.last_name) {
+      return profile.last_name;
+    }
+    if (fid.includes("phone--number") && profile.phone_number) {
+      return profile.phone_number;
+    }
+    if (fid.includes("addresssection--addressline1") && profile.address_line_1) {
+      return profile.address_line_1;
+    }
+    if (fid.includes("addresssection--city") && profile.city) {
+      return profile.city;
+    }
+    if (fid.includes("addresssection--postalcode") && profile.zip_postal) {
+      return profile.zip_postal;
+    }
+    return undefined;
+  }
+};
