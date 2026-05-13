@@ -175,6 +175,10 @@ var AG_VALUE_DENORMALIZERS = {
       case "Hispanic or Latino": return [
         "Hispanic or Latino",
         "Hispanic/Latino",
+        "Hispanic",
+        "Latino",
+        "Latine",
+        "Hispanic, Latine or of Spanish Origin",
         "Hispanic or Latino - A person of Cuban, Mexican, Puerto Rican, South or Central American, or other Spanish culture or origin regardless of race"
       ];
       case "Asian": return [
@@ -228,6 +232,9 @@ var AG_DECLINE_OPTION_LABELS = [
   "I prefer not to say",
   "I don't wish to disclose",
   "I don't wish to disclose.",
+  "I don't wish to answer",
+  "I don't wish to answer.",
+  "I don't want to answer",
   "I do not wish to disclose",
   "I do not wish to disclose.",
   "I do not wish to answer",
