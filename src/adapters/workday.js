@@ -145,6 +145,79 @@ const AG_ADAPTER_WORKDAY = {
     return lbl ? lbl.textContent.trim() : el.value;
   },
 
+  async prefillPass({ workHistory }) {
+    await this._maybeExpandWorkHistory(workHistory);
+    await this._maybeAttachResume();
+  },
+
+  _pageKey() {
+    return location.pathname + location.search;
+  },
+
+  async _maybeExpandWorkHistory(workHistory) {
+    if (!workHistory || workHistory.length === 0) return;
+    const key = this._pageKey();
+    if (window.__autograph_wd_work_expanded === key) return;
+    const section = this._findWorkExperienceSection();
+    if (!section) return;
+    const addBtn = this._findAddAnotherButton(section, /work/i);
+    if (!addBtn) return;
+    const rowSelector = '[data-automation-id*="workExperience-"], [data-automation-id*="WorkExperience-"], [data-automation-id^="workHistory-"]';
+    const target = Math.min(workHistory.length, 8);
+    let safety = 12;
+    while (safety-- > 0) {
+      const existing = section.querySelectorAll(rowSelector).length;
+      if (existing >= target) break;
+      addBtn.click();
+      await new Promise(r => setTimeout(r, 800));
+    }
+    window.__autograph_wd_work_expanded = key;
+  },
+
+  async _maybeAttachResume() {
+    if (typeof agSynthesizeResumeFile !== "function") return;
+    const key = this._pageKey();
+    if (window.__autograph_wd_resume_attached === key) return;
+    const fileInput = document.querySelector(
+      'input[type="file"][data-automation-id*="file-upload"], ' +
+      'input[type="file"][data-automation-id*="resume"], ' +
+      '[data-automation-id*="resume"] input[type="file"], ' +
+      '[data-automation-id*="fileUpload"] input[type="file"]'
+    );
+    if (!fileInput) return;
+    if (fileInput.files && fileInput.files.length > 0) {
+      window.__autograph_wd_resume_attached = key;
+      return;
+    }
+    const file = await agSynthesizeResumeFile();
+    if (!file) return;
+    if (typeof agFillFileInput === "function" && agFillFileInput(fileInput, file)) {
+      window.__autograph_wd_resume_attached = key;
+    }
+  },
+
+  _findWorkExperienceSection() {
+    const explicit = document.querySelector('[data-automation-id*="workExperience"], [data-automation-id*="WorkExperience"], [data-automation-id*="workHistory"]');
+    if (!explicit) return null;
+    return explicit.closest('[data-automation-id*="ection"], section') || explicit.parentElement || explicit;
+  },
+
+  _findAddAnotherButton(section, contextRe) {
+    if (!section) return null;
+    const buttons = section.querySelectorAll('button, [role="button"]');
+    let fallback = null;
+    for (const btn of buttons) {
+      const text = (btn.textContent || "").trim().toLowerCase();
+      const automation = (btn.getAttribute("data-automation-id") || "").toLowerCase();
+      if (!text && !automation) continue;
+      const isAdd = /^add(\s+another)?$/.test(text) || /add-button|addbutton|^add$|add_another/.test(automation);
+      if (!isAdd) continue;
+      if (contextRe && (contextRe.test(automation) || contextRe.test(text))) return btn;
+      if (!fallback) fallback = btn;
+    }
+    return fallback;
+  },
+
   synthesizeValue(profile, fieldId, label) {
     const fid = (fieldId || "").toLowerCase();
     const lab = (label || "").toLowerCase();

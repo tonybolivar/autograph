@@ -513,6 +513,13 @@
       if (added === 0) return;
       clearTimeout(setupObserver._t);
       setupObserver._t = setTimeout(async () => {
+        if (adapter.prefillPass) {
+          try {
+            const profile = await agLoadProfile();
+            const workHistory = (typeof agLoadWorkHistory === "function") ? await agLoadWorkHistory() : [];
+            await adapter.prefillPass({ profile, workHistory });
+          } catch (err) {}
+        }
         const { detected, filled } = await runFillPass();
         detectedThisVisit += detected;
         if (filled > 0) {
@@ -584,6 +591,13 @@
     if (adapter.waitForReady) await adapter.waitForReady();
     if (adapter.gateFillOnVisibility && adapter.fieldSelector) {
       await waitForVisibility(adapter.fieldSelector);
+    }
+    if (adapter.prefillPass) {
+      try {
+        const profile = await agLoadProfile();
+        const workHistory = (typeof agLoadWorkHistory === "function") ? await agLoadWorkHistory() : [];
+        await adapter.prefillPass({ profile, workHistory });
+      } catch (err) {}
     }
     const { detected, filled } = await runFillPass();
     detectedThisVisit = detected;

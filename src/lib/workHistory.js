@@ -72,39 +72,51 @@ async function agMoveWorkEntry(id, delta) {
 }
 
 const AG_WORK_INDEX_PATTERNS = [
-  /(?:work\s*experience|employment|position|job|experience|employer)[\s\-_]*?#?\s*(\d+)/i,
   /experience\[(\d+)\]/i,
+  /(?:work\s*experience|employment|position|job|experience|employer)[\s\-_]*?#?\s*(\d+)/i,
   /^(?:work|job|position|exp)[\s\-_]*?(\d+)\b/i,
   /\b(\d+)(?:st|nd|rd|th)?\s+(?:most\s+recent|previous|prior)\s+(?:job|position|role|employer)/i
 ];
 
-const AG_WORK_SUBFIELD_ALIASES = [
-  [["company", "employer", "organization", "company_name", "employer_name"], "company"],
-  [["title", "job_title", "position", "role", "current_position"], "title"],
-  [["location", "city", "where", "work_location"], "location"],
-  [["start_date", "from", "started", "begin_date"], "start"],
-  [["start_month", "from_month", "begin_month"], "start_month"],
-  [["start_year", "from_year", "begin_year"], "start_year"],
-  [["end_date", "to", "ended", "until", "finish_date"], "end"],
-  [["end_month", "to_month", "finish_month"], "end_month"],
-  [["end_year", "to_year", "finish_year"], "end_year"],
-  [["description", "summary", "responsibilities", "achievements", "duties"], "description"],
-  [["current", "is_current", "currently", "present"], "is_current"]
+const AG_WORK_SUBFIELD_RULES = [
+  { match: (h) => /\b(company|employer|organization)\b/.test(h) && !/\b(current\s*company|currentcompany)\b/.test(h), sub: "company" },
+  { match: (h) => /\b(job\s*title|title|position|role|jobtitle)\b/.test(h) && !/\bcurrent\s*title\b/.test(h), sub: "title" },
+  { match: (h) => /\b(location|city|where)\b/.test(h), sub: "location" },
+  { match: (h) => /\b(from|start|begin)\b/.test(h) && /\bmonth\b/.test(h), sub: "start_month" },
+  { match: (h) => /\b(from|start|begin)\b/.test(h) && /\byear\b/.test(h), sub: "start_year" },
+  { match: (h) => /\b(to|end|until|finish|through)\b/.test(h) && /\bmonth\b/.test(h), sub: "end_month" },
+  { match: (h) => /\b(to|end|until|finish|through)\b/.test(h) && /\byear\b/.test(h), sub: "end_year" },
+  { match: (h) => /\b(from|start|begin)\b/.test(h) && /\bdate\b/.test(h) && !/\b(month|year)\b/.test(h), sub: "start" },
+  { match: (h) => /\b(to|end|until|finish)\b/.test(h) && /\bdate\b/.test(h) && !/\b(month|year)\b/.test(h), sub: "end" },
+  { match: (h) => /\b(description|summary|responsibilities|duties|achievements|role\s*description)\b/.test(h), sub: "description" },
+  { match: (h) => /\b(currently|present|current(?:ly)?\s*work)\b/.test(h), sub: "is_current" }
 ];
 
-function _agEscape(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+function _agSplitCamelAndLower(s) {
+  return String(s || "")
+    .replace(/([a-z])([A-Z])/g, "$1_$2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1_$2")
+    .toLowerCase();
+}
 
 function agParseWorkFieldId(label, fieldId) {
-  const sources = [fieldId || "", label || ""];
+  const rawSources = [fieldId || "", label || ""];
+  const normalized = rawSources.map(_agSplitCamelAndLower);
+
   let indexHit = null;
-  for (const src of sources) {
+  for (let i = 0; i < normalized.length; i++) {
+    const src = normalized[i];
     if (!src) continue;
     for (const re of AG_WORK_INDEX_PATTERNS) {
       const m = src.match(re);
       if (m) {
         const n = parseInt(m[1], 10);
         if (!isNaN(n)) {
-          indexHit = src === fieldId || /\[\d+\]/.test(src) ? n : n - 1;
+          if (/\[\d+\]/.test(src)) {
+            indexHit = n;
+          } else {
+            indexHit = n - 1;
+          }
           if (indexHit < 0) indexHit = 0;
           break;
         }
@@ -114,12 +126,9 @@ function agParseWorkFieldId(label, fieldId) {
   }
   if (indexHit === null) return null;
 
-  const haystack = (sources.join(" ")).toLowerCase();
-  for (const [aliases, sub] of AG_WORK_SUBFIELD_ALIASES) {
-    for (const alias of aliases) {
-      const re = new RegExp(`(?:^|[\\s_\\-/\\[\\]])${_agEscape(alias)}(?:$|[\\s_\\-/\\[\\]:?.!,;])`, "i");
-      if (re.test(haystack)) return { index: indexHit, subfield: sub };
-    }
+  const haystack = " " + normalized.join(" ").replace(/[_\-/\[\]]+/g, " ") + " ";
+  for (const rule of AG_WORK_SUBFIELD_RULES) {
+    if (rule.match(haystack)) return { index: indexHit, subfield: rule.sub };
   }
   return null;
 }

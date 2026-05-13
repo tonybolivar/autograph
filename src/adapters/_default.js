@@ -30,5 +30,6 @@ const AG_ADAPTER_DEFAULT = {
   suppressRefillOnRerender: false,
   getHighlightSelector: null,
   getTextValue: (el) => el.value,
-  synthesizeValue: null
+  synthesizeValue: null,
+  prefillPass: null
 };
