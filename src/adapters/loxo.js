@@ -22,6 +22,14 @@ var AG_ADAPTER_LOXO = {
       const lbl = wrap.querySelector("label, legend");
       if (lbl && lbl.textContent.trim()) return lbl.textContent.replace(/\*$/, "").trim();
     }
+    if (el.placeholder) return el.placeholder.replace(/^Your\s+/i, "").trim();
     return null;
+  },
+
+  synthesizeValue(profile, fieldId) {
+    if (fieldId === "name" || fieldId === "full_name") {
+      return `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || undefined;
+    }
+    return undefined;
   }
 };
