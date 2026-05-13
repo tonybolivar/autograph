@@ -17,7 +17,7 @@ var AG_LABEL_ALIASES = [
   [["pronouns", "personal_pronouns", "preferred_pronouns", "your pronouns", "what pronouns"], "personal_pronouns"],
   [["preferred_name", "preferred name", "nickname", "what should we call you", "go by"], "preferred_name"],
   [["address_line_2", "address line 2", "address2", "apt", "apartment", "unit", "suite"], "address_line_2"],
-  [["current_company", "current company", "company", "employer", "current employer", "present employer", "currentcompany"], "current_company"],
+  [["current_company", "current company", "current employer", "present employer", "currentcompany"], "current_company"],
   [["current_title", "current title", "current position", "job title", "current job title", "current_position", "title", "position", "current role"], "current_title"],
   [["years_experience", "years of experience", "years experience", "total years of experience", "yearsofexperience", "professional experience years", "experience years", "how many years", "industry experience", "years of industry experience", "years of relevant experience", "year experience", "yoe"], "years_experience"],
   [["desired_salary", "desired salary", "salary expectation", "expected salary", "salary expectations", "compensation expectation", "expected compensation", "annual salary"], "desired_salary"],

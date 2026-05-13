@@ -13,6 +13,7 @@ var AG_ADAPTER_BREEZYHR = {
   },
 
   getFieldId(el) {
+    if (el.name === "salaryCurrency") return "salary_currency";
     if (el.name && /^c[A-Z]/.test(el.name)) {
       return el.name.slice(1).replace(/([A-Z])/g, (m, c, i) => (i === 0 ? c : "_" + c)).toLowerCase();
     }
@@ -37,13 +38,13 @@ var AG_ADAPTER_BREEZYHR = {
   },
 
   async _fillAngularSelects(profile) {
+    await new Promise(r => setTimeout(r, 1500));
     const selects = document.querySelectorAll('select[ng-model]');
     for (const sel of selects) {
-      if (sel.selectedIndex > 0 && !sel.value.startsWith("? undefined")) continue;
+      if (sel.selectedIndex > 0 && !sel.value.startsWith("? undefined") && sel.value !== "") continue;
       const ngModel = sel.getAttribute("ng-model");
       if (!ngModel) continue;
-      const labelEl = sel.closest("dl, .form-group, .question, .form-field, fieldset, label")?.querySelector("label, .label, dt");
-      const labelText = labelEl ? labelEl.textContent.trim() : "";
+      const labelText = typeof agExtractLabel === "function" ? agExtractLabel(sel) : "";
       const fieldId = typeof agMatchToProfileField === "function" ? agMatchToProfileField(labelText, sel.name || "") : null;
       if (!fieldId || !profile[fieldId]) continue;
       const value = profile[fieldId];
@@ -53,7 +54,7 @@ var AG_ADAPTER_BREEZYHR = {
       const selector = sel.name ? `select[name="${sel.name}"]` : (sel.id ? `select#${sel.id}` : null);
       if (!selector) continue;
       window.postMessage({ __autograph: "angular_fill", selector, ngModel, value: matched.value }, "*");
-      await new Promise(r => setTimeout(r, 100));
+      await new Promise(r => setTimeout(r, 250));
     }
   },
 
