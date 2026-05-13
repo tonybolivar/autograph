@@ -154,5 +154,15 @@ var AG_ADAPTER_GREENHOUSE = {
     const root = el.closest(".select__control, [class*='select__control']") || el;
     const observer = new MutationObserver(() => onChange("greenhouse-dropdown"));
     observer.observe(root, { childList: true, subtree: true, characterData: true });
+  },
+
+  synthesizeValue(profile, fieldId, label) {
+    var lab = (label || "").toLowerCase();
+    if (/currently\s+located\s+in\s+the\s+(us|usa|united states)/i.test(lab)) {
+      var country = (profile.country || "").toLowerCase().trim();
+      if (/^(united states|usa|us|u\.s\.a?\.?|america)$/i.test(country)) return "Yes";
+      if (country) return "No";
+    }
+    return undefined;
   }
 };
