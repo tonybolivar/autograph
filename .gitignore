@@ -11,3 +11,4 @@ build/
 .package/
 .playwright-mcp/
 tests/harness/.logs/
+store-assets/
