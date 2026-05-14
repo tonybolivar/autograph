@@ -8,11 +8,11 @@ const EXT = path.resolve(__dirname, '../..');
 const URL_ = 'https://riverkeeper.bamboohr.com/careers/44';
 
 const PROFILE = {
-  first_name: 'Anthony', last_name: 'Bolivar', email: 'tony.e.bolivar@gmail.com',
-  phone_number: '(936) 419-2746', phone_type: 'Mobile',
+  first_name: 'Jane', last_name: 'Doe', email: 'jane.doe@example.com',
+  phone_number: '(555) 555-0123', phone_type: 'Mobile',
   address_line_1: '123 Main St', city: 'Hamilton', state_province: 'NY', zip_postal: '13346',
   country: 'United States',
-  linkedin_profile: 'https://www.linkedin.com/in/anthonybolivar',
+  linkedin_profile: 'https://www.linkedin.com/in/janedoe',
   desired_salary: '150000', salary_currency: 'USD',
   work_authorization: 'Yes', need_sponsorship: 'No',
   earliest_start_date: '2026-06-01',
@@ -34,7 +34,7 @@ async function main() {
   await opt.goto(`chrome-extension://${extId}/src/ui/options/options.html`);
   await opt.evaluate(async ({ p, r }) => {
     await chrome.storage.sync.set({ masterProfile: p });
-    await chrome.storage.local.set({ resumeFile: { base64: r, filename: 'anthony_bolivar_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() } });
+    await chrome.storage.local.set({ resumeFile: { base64: r, filename: 'jane_doe_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() } });
   }, { p: PROFILE, r: PDF });
   await opt.close();
 

@@ -37,7 +37,6 @@ var AG_ADAPTER_EIGHTFOLD = {
     }
   },
 
-
   getJobId(url) {
     const m = url.match(/eightfold\.ai\/[^/]+\/(?:job|position)\/([A-Za-z0-9-]+)/) ||
               url.match(/eightfold\.ai\/careers\/job\/([A-Za-z0-9-]+)/);

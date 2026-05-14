@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Autograph - Free ATS Autofill",
+  "name": "Autograph: Free ATS Autofill",
   "version": "0.1.0",
-  "description": "Free, open-source autofill for job applications across 21+ ATS platforms. No accounts, no paywalls, no tracking.",
+  "description": "Open-source autofill for job applications. Works on Workday, Greenhouse, Lever, Ashby, and 17 other ATS platforms. GPL-3.0.",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

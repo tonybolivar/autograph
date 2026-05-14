@@ -8,23 +8,21 @@ const EXT = path.resolve(__dirname, '../..');
 
 const URL_ = 'https://nvidia.wd5.myworkdayjobs.com/en-US/NVIDIAExternalCareerSite/job/US-CA-Santa-Clara/Senior-GPU-Propogation-Engine-Engineer_JR2016808/apply';
 
-// Unique email per run so the Create Account submit succeeds rather than
-// hitting an already-registered account.
 const UNIQ = Date.now();
-const ACCOUNT_EMAIL = `tony.e.bolivar+wd${UNIQ}@gmail.com`;
+const ACCOUNT_EMAIL = `jane.doe+wd${UNIQ}@gmail.com`;
 
 const PROFILE = {
-  first_name: 'Anthony', last_name: 'Bolivar', email: 'tony.e.bolivar@gmail.com',
-  phone_number: '(936) 419-2746', phone_type: 'Mobile',
+  first_name: 'Jane', last_name: 'Doe', email: 'jane.doe@example.com',
+  phone_number: '(555) 555-0123', phone_type: 'Mobile',
   address_line_1: '123 Main St', city: 'Hamilton', state_province: 'New York', zip_postal: '13346',
   country: 'United States', phone_country: 'United States',
-  linkedin_profile: 'https://www.linkedin.com/in/anthonybolivar',
-  github_profile: 'https://github.com/abolivar', website: 'https://anthonybolivar.com',
+  linkedin_profile: 'https://www.linkedin.com/in/janedoe',
+  github_profile: 'https://github.com/janedoe', website: 'https://example.com',
   work_authorization: 'Yes', need_sponsorship: 'No', willing_to_relocate: 'Yes', bound_by_noncompete: 'No',
   is_veteran: 'No', have_disability: 'No',
   gender: 'Male', race: 'Hispanic or Latino', hispanic_ethnicity: 'Yes',
   current_company: 'Acme Corp', current_title: 'Software Engineer', years_experience: '3',
-  education_school: 'Colgate University', education_degree: 'Bachelor of Arts', education_major: 'Computer Science',
+  education_school: 'State University', education_degree: 'Bachelor of Arts', education_major: 'Computer Science',
   education_end_month: 'May', education_end_year: '2025',
   previously_employed_here: 'No', referral_source: 'LinkedIn',
   why_this_company: 'I am excited to apply my engineering background at NVIDIA.',
@@ -74,7 +72,7 @@ async function main() {
   await opt.goto(`chrome-extension://${extId}/src/ui/options/options.html`);
   await opt.evaluate(async ({ p, r }) => {
     await chrome.storage.sync.set({ masterProfile: p });
-    await chrome.storage.local.set({ resumeFile: { base64: r, filename: 'anthony_bolivar_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() } });
+    await chrome.storage.local.set({ resumeFile: { base64: r, filename: 'jane_doe_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() } });
   }, { p: PROFILE, r: PDF });
   await opt.close();
 
@@ -87,8 +85,6 @@ async function main() {
     return { url: page.url() };
   });
 
-  // Adapter prefillPass auto-advances the full gate sequence:
-  // Apply Manually (adventure page), Sign in with email, Create Account.
   await page.waitForTimeout(18000);
 
   const preSubmit = await page.evaluate(() => ({
@@ -98,8 +94,6 @@ async function main() {
   }));
   console.log('PRE_SUBMIT title=', preSubmit.title, 'filled=', preSubmit.filled);
 
-  // Accept the privacy policy checkbox if present (required to submit on
-  // NVIDIA and similar tenants). Use page.click so click_filter accepts it.
   await driveStep(page, 'check privacy policy (real mouse)', async () => {
     var sel = '[data-automation-id="createAccountCheckbox"]';
     var ct = await page.locator(sel).count();
@@ -109,15 +103,11 @@ async function main() {
   });
   await page.waitForTimeout(800);
 
-  // Workday wraps createAccountSubmitButton in a click_filter DIV with
-  // role=button that intercepts and validates the click. Clicking the
-  // filter itself dispatches the real submit. The underlying button is
-  // covered, so a direct click on it times out as not-actionable.
   await driveStep(page, 'click Create Account submit via click_filter', async () => {
     var filter = '[data-automation-id="noCaptchaWrapper"] [data-automation-id="click_filter"]';
     var ct = await page.locator(filter).count();
     if (ct === 0) {
-      // Fall back to forcing a click on the underlying button.
+
       await page.locator('[data-automation-id="createAccountSubmitButton"]').first().click({ force: true, timeout: 5000 });
       return { ok: true, via: 'force-button' };
     }

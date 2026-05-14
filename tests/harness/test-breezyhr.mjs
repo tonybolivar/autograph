@@ -9,19 +9,19 @@ const EXT = path.resolve(__dirname, '../..');
 const URL_ = 'https://brilliant.breezy.hr/p/2621fe1cc449-senior-software-engineer-full-stack/apply';
 
 const PROFILE = {
-  first_name: 'Anthony', last_name: 'Bolivar', email: 'tony.e.bolivar@gmail.com',
-  phone_number: '(936) 419-2746',
+  first_name: 'Jane', last_name: 'Doe', email: 'jane.doe@example.com',
+  phone_number: '(555) 555-0123',
   address_line_1: '123 Main St',
   city: 'Hamilton', state_province: 'NY', zip_postal: '13346', country: 'United States',
-  linkedin_profile: 'https://www.linkedin.com/in/anthonybolivar',
-  github_profile: 'https://github.com/abolivar', website: 'https://anthonybolivar.com',
+  linkedin_profile: 'https://www.linkedin.com/in/janedoe',
+  github_profile: 'https://github.com/janedoe', website: 'https://example.com',
   work_authorization: 'Yes', need_sponsorship: 'No',
   willing_to_relocate: 'Yes', bound_by_noncompete: 'No',
   is_veteran: 'No', have_disability: 'No',
   gender: 'Male', race: 'Hispanic or Latino', hispanic_ethnicity: 'Yes',
   current_company: 'Acme Corp', current_title: 'Software Engineer', years_experience: '3',
   desired_salary: '150000', salary_currency: 'USD',
-  education_school: 'Colgate University', education_degree: 'Bachelor of Arts',
+  education_school: 'State University', education_degree: 'Bachelor of Arts',
   education_major: 'Computer Science', education_end_month: 'May', education_end_year: '2025',
   referred_by: 'Jane Smith'
 };
@@ -46,7 +46,7 @@ async function main() {
   await opt.evaluate(async ({ p, r, w }) => {
     await chrome.storage.sync.set({ masterProfile: p });
     await chrome.storage.local.set({
-      resumeFile: { base64: r, filename: 'anthony_bolivar_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() },
+      resumeFile: { base64: r, filename: 'jane_doe_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() },
       workHistory: w
     });
   }, { p: PROFILE, r: PDF, w: WORK });

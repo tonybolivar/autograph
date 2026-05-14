@@ -9,7 +9,6 @@ var AG_ADAPTER_SMARTRECRUITERS = {
     return undefined;
   },
 
-
   getJobId(url) {
     const m = url.match(/smartrecruiters\.com\/[^/]+\/(\d+)/);
     return m ? m[1] : null;

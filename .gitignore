@@ -4,6 +4,10 @@ Thumbs.db
 *.log
 .vscode/
 .idea/
+.claude/
 *.zip
 dist/
 build/
+.package/
+.playwright-mcp/
+tests/harness/.logs/

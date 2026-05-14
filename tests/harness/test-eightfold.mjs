@@ -9,12 +9,12 @@ const EXT = path.resolve(__dirname, '../..');
 const URL_ = 'https://accenture.eightfold.ai/careers/apply?pid=68759035528';
 
 const PROFILE = {
-  first_name: 'Anthony', last_name: 'Bolivar', email: 'tony.e.bolivar@gmail.com',
-  phone_number: '(936) 419-2746', phone_type: 'Mobile',
+  first_name: 'Jane', last_name: 'Doe', email: 'jane.doe@example.com',
+  phone_number: '(555) 555-0123', phone_type: 'Mobile',
   address_line_1: '123 Main St', city: 'Hamilton', state_province: 'NY', zip_postal: '13346',
   country: 'United States', phone_country: 'United States',
-  linkedin_profile: 'https://www.linkedin.com/in/anthonybolivar',
-  github_profile: 'https://github.com/abolivar', website: 'https://anthonybolivar.com',
+  linkedin_profile: 'https://www.linkedin.com/in/janedoe',
+  github_profile: 'https://github.com/janedoe', website: 'https://example.com',
   work_authorization: 'Yes', need_sponsorship: 'No',
   willing_to_relocate: 'Yes', bound_by_noncompete: 'No',
   is_veteran: 'No', have_disability: 'No',
@@ -37,7 +37,7 @@ async function main() {
   await opt.goto(`chrome-extension://${extId}/src/ui/options/options.html`);
   await opt.evaluate(async ({ p, r }) => {
     await chrome.storage.sync.set({ masterProfile: p });
-    await chrome.storage.local.set({ resumeFile: { base64: r, filename: 'anthony_bolivar_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() } });
+    await chrome.storage.local.set({ resumeFile: { base64: r, filename: 'jane_doe_resume.pdf', type: 'application/pdf', size: 500, uploadedAt: Date.now() } });
   }, { p: PROFILE, r: PDF });
   await opt.close();
 
@@ -108,14 +108,13 @@ async function main() {
   const trace = await page.evaluate(() => {
     const e = document.getElementById('Contact_Information_email');
     if (!e) return null;
-    // The content script is isolated world - can't access agExtractLabel directly.
-    // Check structural cues for adapter logic.
+
     const label = document.querySelector(`label[for="${CSS.escape(e.id)}"]`);
     const wrap = e.closest('.form-group, .ef-form-field, [class*=FormField], fieldset');
     const wrapLabel = wrap?.querySelector('label, legend, [class*=label]');
-    // Inside dialog/modal?
+
     const dialog = e.closest('.ant-modal, [role=dialog], [role=alertdialog], [class*=Modal], [class*=Dialog], [class*=Drawer]');
-    // Check if has resume parser cls
+
     return {
       labelFor: label?.textContent?.trim().slice(0, 40),
       wrapClass: (wrap?.className || '').slice(0, 80),
@@ -166,14 +165,13 @@ async function main() {
   });
   console.log('DUPCHECK:', JSON.stringify(dupCheck));
 
-
   const directFill = await page.evaluate(async () => {
     const e = document.getElementById('Contact_Information_email');
     if (!e) return null;
     e.focus();
     const proto = window.HTMLInputElement.prototype;
     const setter = Object.getOwnPropertyDescriptor(proto, 'value').set;
-    setter.call(e, 'tony.e.bolivar@gmail.com');
+    setter.call(e, 'jane.doe@example.com');
     e.dispatchEvent(new Event('input', { bubbles: true }));
     e.dispatchEvent(new Event('change', { bubbles: true }));
     await new Promise(r => setTimeout(r, 200));

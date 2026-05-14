@@ -9,17 +9,17 @@ const EXT = path.resolve(__dirname, '../..');
 const URL_ = 'https://job-boards.greenhouse.io/discord/jobs/8517644002';
 
 const PROFILE = {
-  first_name: 'Anthony', last_name: 'Bolivar', email: 'tony.e.bolivar@gmail.com',
-  phone_number: '(936) 419-2746', phone_type: 'Mobile',
+  first_name: 'Jane', last_name: 'Doe', email: 'jane.doe@example.com',
+  phone_number: '(555) 555-0123', phone_type: 'Mobile',
   city: 'Hamilton', state_province: 'NY', zip_postal: '13346',
   country: 'United States', phone_country: 'United States',
-  linkedin_profile: 'https://www.linkedin.com/in/anthonybolivar',
-  github_profile: 'https://github.com/abolivar', website: 'https://anthonybolivar.com',
+  linkedin_profile: 'https://www.linkedin.com/in/janedoe',
+  github_profile: 'https://github.com/janedoe', website: 'https://example.com',
   work_authorization: 'Yes', need_sponsorship: 'No', willing_to_relocate: 'Yes', bound_by_noncompete: 'No',
   is_veteran: 'No', have_disability: 'No',
   gender: 'Male', race: 'Hispanic or Latino', hispanic_ethnicity: 'Yes',
   current_company: 'Acme Corp', current_title: 'Software Engineer', years_experience: '3',
-  education_school: 'Colgate University', education_degree: 'Bachelor of Arts', education_major: 'Computer Science',
+  education_school: 'State University', education_degree: 'Bachelor of Arts', education_major: 'Computer Science',
   education_end_month: 'May', education_end_year: '2025',
   why_this_company: 'I love the product and the engineering culture.',
   referral_source: 'LinkedIn'
@@ -68,7 +68,7 @@ async function main() {
     if (!el) return { found: false };
     const control = el.closest('[class*=select__control]');
     const single = control?.querySelector('[class*=select__single-value]');
-    // Walk ancestors looking for ag-filled
+
     let cur = el;
     let agAncestor = null;
     while (cur) {

@@ -10,19 +10,19 @@ const EXT = path.resolve(__dirname, '../..');
 const ASHBY_URL = 'https://jobs.ashbyhq.com/openai/6202038a-323b-43ce-ae10-534acba4145c/application';
 
 const PROFILE = {
-  first_name: 'Anthony',
-  last_name: 'Bolivar',
-  email: 'tony.e.bolivar@gmail.com',
-  phone_number: '(936) 419-2746',
+  first_name: 'Jane',
+  last_name: 'Doe',
+  email: 'jane.doe@example.com',
+  phone_number: '(555) 555-0123',
   phone_type: 'Mobile',
   city: 'Hamilton',
   state_province: 'NY',
   zip_postal: '13346',
   country: 'United States',
   phone_country: 'United States',
-  linkedin_profile: 'https://www.linkedin.com/in/anthonybolivar',
-  github_profile: 'https://github.com/abolivar',
-  website: 'https://anthonybolivar.com',
+  linkedin_profile: 'https://www.linkedin.com/in/janedoe',
+  github_profile: 'https://github.com/janedoe',
+  website: 'https://example.com',
   work_authorization: 'Yes',
   need_sponsorship: 'No',
   willing_to_relocate: 'Yes',
@@ -35,7 +35,7 @@ const PROFILE = {
   current_company: 'Acme Corp',
   current_title: 'Software Engineer',
   years_experience: '3',
-  education_school: 'Colgate University',
+  education_school: 'State University',
   education_degree: 'Bachelor of Arts',
   education_major: 'Computer Science',
   education_end_month: 'May',
@@ -68,7 +68,7 @@ async function main() {
     await chrome.storage.local.set({
       resumeFile: {
         base64: resumeBase64,
-        filename: 'anthony_bolivar_resume.pdf',
+        filename: 'jane_doe_resume.pdf',
         type: 'application/pdf',
         size: 500,
         uploadedAt: Date.now()
@@ -93,7 +93,6 @@ async function main() {
   page.on('pageerror', err => console.log('[pageerror]', err.message));
   await page.goto(ASHBY_URL, { waitUntil: 'domcontentloaded' });
 
-  // Inject a probe to see if our globals exist
   await page.waitForTimeout(2500);
   const globals = await page.evaluate(() => ({
     loaded: !!window.__AUTOGRAPH_LOADED__,
@@ -128,9 +127,8 @@ async function main() {
   });
   console.log('Name input diag:', nameInputDiag);
 
-  // Probe the content script's ISOLATED world via chrome.scripting
   const scopeProbe = await page.evaluate(async () => {
-    // Try via window
+
     return {
       page_AG_ADAPTER_ASHBY: typeof window.AG_ADAPTER_ASHBY,
       page_AG_SUPPORTED_SITES: typeof window.AG_SUPPORTED_SITES

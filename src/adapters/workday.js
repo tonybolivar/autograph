@@ -49,8 +49,7 @@ var AG_ADAPTER_WORKDAY = {
   },
 
   getFieldLabel(el) {
-    // Workday puts the visible label on the formField-* wrapper. Prefer it
-    // over aria-label, which often appends the placeholder (e.g. "State Select One").
+
     var formFieldWrap = el.closest('[data-automation-id^="formField"]');
     if (formFieldWrap) {
       var lbl = formFieldWrap.querySelector("label");
@@ -101,10 +100,7 @@ var AG_ADAPTER_WORKDAY = {
   },
 
   getDropdownValue(el) {
-    // For multi-select containers, count the actual chip elements (data-automation-id
-    // exactly "selectedItem"). The container's textContent renders the placeholder
-    // ("0 items selected") even when empty, and querySelector with *=selectedItem
-    // also matches the selectedItemList wrapper, so neither is a reliable signal.
+
     if (el.getAttribute && el.getAttribute("data-automation-id") === "multiSelectContainer") {
       var chips = el.querySelectorAll('[data-automation-id="selectedItem"]');
       if (chips.length === 0) return "";
@@ -122,25 +118,15 @@ var AG_ADAPTER_WORKDAY = {
     el.scrollIntoView({ block: "center", behavior: "instant" });
     var isMulti = el.getAttribute && el.getAttribute("data-automation-id") === "multiSelectContainer";
     if (isMulti) {
-      // Workday multi-select listboxes (How Did You Hear About Us, etc.)
-      // verify event.isTrusted on the option click, so neither synthetic
-      // MouseEvents nor reactProps invocation register the selection. Leave
-      // the field for the user to pick manually rather than producing a
-      // stale data-ag-filled state. Filling here would also block the
-      // selectedItem chip check downstream from advancing the page.
+
       return false;
     }
-    // Workday button dropdowns ignore plain el.click() because the React
-    // handler listens on the mousedown / mouseup pair, not just click.
-    // Dispatching the full sequence opens the listbox so we can pick.
+
     el.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, button: 0 }));
     el.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, button: 0 }));
     el.click();
     await new Promise(r => setTimeout(r, 350));
-    // Workday's open dropdown listbox has no data-automation-id and sits next
-    // to a selectedItemList listbox that holds the current chip selections.
-    // Search for any listbox containing role=option children, ignoring the
-    // selectedItemList one.
+
     var listboxes = Array.from(document.querySelectorAll("[role='listbox']")).filter(m =>
       m.getAttribute("data-automation-id") !== "selectedItemList" &&
       !m.closest("[data-automation-id='selectedItemList']")
